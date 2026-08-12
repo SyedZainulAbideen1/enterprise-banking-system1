@@ -1,31 +1,72 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  clearTransactionError,
+  fetchCustomerTransactions,
+} from "../../features/transactions/transactionSlice";
+
+const formatDate = (timestamp) => {
+  if (!timestamp) {
+    return "Not available";
+  }
+
+  if (typeof timestamp.toDate === "function") {
+    return timestamp.toDate().toLocaleString();
+  }
+
+  if (timestamp instanceof Date) {
+    return timestamp.toLocaleString();
+  }
+
+  return "Not available";
+};
+
+const formatAmount = (amount) => {
+  const numericAmount = Number(amount);
+
+  if (Number.isNaN(numericAmount)) {
+    return "PKR 0.00";
+  }
+
+  return new Intl.NumberFormat("en-PK", {
+    style: "currency",
+    currency: "PKR",
+    minimumFractionDigits: 2,
+  }).format(numericAmount);
+};
 
 const TransactionHistory = () => {
+  const dispatch = useDispatch();
+
   const { user } = useSelector(
     (state) => state.auth
   );
 
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const {
+    items: transactions,
+    loading,
+    error,
+  } = useSelector(
+    (state) => state.transactions
+  );
 
   useEffect(() => {
-    /*
-     * Transaction data will be connected to Firebase
-     * through transactionService.js.
-     *
-     * For now, this page provides the complete UI/state
-     * foundation without inventing transaction records.
-     */
     if (!user?.uid) {
-      setTransactions([]);
       return;
     }
 
-    setLoading(false);
-  }, [user?.uid]);
+    dispatch(
+      fetchCustomerTransactions(user.uid)
+    );
+
+    return () => {
+      dispatch(clearTransactionError());
+    };
+  }, [dispatch, user?.uid]);
 
   return (
     <main>
@@ -33,7 +74,8 @@ const TransactionHistory = () => {
         <h1>Transaction History</h1>
 
         <p>
-          View your banking transaction history here.
+          View your banking transaction history
+          here.
         </p>
 
         <Link to="/customer">
@@ -59,7 +101,8 @@ const TransactionHistory = () => {
               <h2>No Transactions</h2>
 
               <p>
-                You do not have any transactions yet.
+                You do not have any transactions
+                yet.
               </p>
             </div>
           )}
@@ -81,21 +124,29 @@ const TransactionHistory = () => {
                 <tbody>
                   {transactions.map(
                     (transaction) => (
-                      <tr key={transaction.id}>
+                      <tr
+                        key={transaction.id}
+                      >
                         <td>
-                          {transaction.date}
+                          {formatDate(
+                            transaction.createdAt
+                          )}
                         </td>
 
                         <td>
-                          {transaction.type}
+                          {transaction.type ||
+                            "Not available"}
                         </td>
 
                         <td>
-                          {transaction.amount}
+                          {formatAmount(
+                            transaction.amount
+                          )}
                         </td>
 
                         <td>
-                          {transaction.status}
+                          {transaction.status ||
+                            "Not available"}
                         </td>
                       </tr>
                     )

@@ -1,9 +1,5 @@
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-
-import { auth } from "../../api/firebaseConfig";
-import { getUserProfile } from "../../api/userService";
 
 const ProtectedRoute = ({
   children,
@@ -11,61 +7,14 @@ const ProtectedRoute = ({
 }) => {
   const location = useLocation();
 
-  const [loading, setLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState(null);
+  const {
+    user,
+    profile,
+    loading,
+    initialized,
+  } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (firebaseUser) => {
-        if (!isMounted) {
-          return;
-        }
-
-        if (!firebaseUser) {
-          setUserProfile(null);
-          setLoading(false);
-          return;
-        }
-
-        try {
-          const profile = await getUserProfile(
-            firebaseUser.uid
-          );
-
-          if (!isMounted) {
-            return;
-          }
-
-          setUserProfile(profile);
-        } catch (error) {
-          console.error(
-            "Protected route profile error:",
-            error
-          );
-
-          if (!isMounted) {
-            return;
-          }
-
-          setUserProfile(null);
-        } finally {
-          if (isMounted) {
-            setLoading(false);
-          }
-        }
-      }
-    );
-
-    return () => {
-      isMounted = false;
-      unsubscribe();
-    };
-  }, []);
-
-  if (loading) {
+  if (loading || !initialized) {
     return (
       <main>
         <p>Checking account access...</p>
@@ -73,7 +22,7 @@ const ProtectedRoute = ({
     );
   }
 
-  if (!auth.currentUser) {
+  if (!user) {
     return (
       <Navigate
         to="/login"
@@ -85,7 +34,7 @@ const ProtectedRoute = ({
     );
   }
 
-  if (!userProfile) {
+  if (!profile) {
     return (
       <Navigate
         to="/login"
@@ -94,7 +43,7 @@ const ProtectedRoute = ({
     );
   }
 
-  if (userProfile.status === "pending") {
+  if (profile.status === "pending") {
     return (
       <Navigate
         to="/registration-pending"
@@ -103,7 +52,7 @@ const ProtectedRoute = ({
     );
   }
 
-  if (userProfile.status === "rejected") {
+  if (profile.status === "rejected") {
     return (
       <Navigate
         to="/account-rejected"
@@ -112,7 +61,7 @@ const ProtectedRoute = ({
     );
   }
 
-  if (userProfile.status !== "active") {
+  if (profile.status !== "active") {
     return (
       <Navigate
         to="/login"
@@ -123,7 +72,7 @@ const ProtectedRoute = ({
 
   if (
     allowedRoles.length > 0 &&
-    !allowedRoles.includes(userProfile.role)
+    !allowedRoles.includes(profile.role)
   ) {
     return (
       <main>
@@ -136,7 +85,7 @@ const ProtectedRoute = ({
 
           <p>
             Your current role is:
-            <strong> {userProfile.role}</strong>
+            <strong> {profile.role}</strong>
           </p>
         </section>
       </main>

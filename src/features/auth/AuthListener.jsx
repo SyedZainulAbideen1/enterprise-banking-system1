@@ -14,6 +14,25 @@ import {
   clearAuth,
 } from "./authSlice";
 
+const makeSerializableProfile = (profile) => {
+  if (!profile) {
+    return null;
+  }
+
+  return Object.fromEntries(
+    Object.entries(profile).map(([key, value]) => {
+      if (
+        value &&
+        typeof value.toMillis === "function"
+      ) {
+        return [key, value.toMillis()];
+      }
+
+      return [key, value];
+    })
+  );
+};
+
 const AuthListener = ({ children }) => {
   const dispatch = useDispatch();
 
@@ -37,7 +56,8 @@ const AuthListener = ({ children }) => {
             uid: firebaseUser.uid,
             email: firebaseUser.email,
             displayName: firebaseUser.displayName,
-            emailVerified: firebaseUser.emailVerified,
+            emailVerified:
+              firebaseUser.emailVerified,
           };
 
           dispatch(setUser(serializableUser));
@@ -46,7 +66,13 @@ const AuthListener = ({ children }) => {
             firebaseUser.uid
           );
 
-          dispatch(setUserProfile(profile));
+          const serializableProfile =
+            makeSerializableProfile(profile);
+
+          dispatch(
+            setUserProfile(serializableProfile)
+          );
+
           dispatch(setAuthError(null));
         } catch (error) {
           console.error(

@@ -1,10 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  clearSubmitSuccess,
+  clearTransactionError,
+  submitDepositRequest,
+} from "../../features/transactions/transactionSlice";
 
 const DepositRequest = () => {
+  const dispatch = useDispatch();
+
   const { user, profile } = useSelector(
     (state) => state.auth
+  );
+
+  const {
+    requestLoading,
+    requestError,
+    submitSuccess,
+  } = useSelector(
+    (state) => state.transactions
   );
 
   const [formData, setFormData] = useState({
@@ -14,11 +32,27 @@ const DepositRequest = () => {
   });
 
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    dispatch(clearTransactionError());
+    dispatch(clearSubmitSuccess());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (submitSuccess) {
+      setFormData({
+        amount: "",
+        source: "",
+        description: "",
+      });
+    }
+  }, [submitSuccess]);
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const {
+      name,
+      value,
+    } = event.target;
 
     setFormData((previous) => ({
       ...previous,
@@ -26,33 +60,45 @@ const DepositRequest = () => {
     }));
 
     setError("");
-    setSuccess("");
+
+    if (submitSuccess) {
+      dispatch(clearSubmitSuccess());
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     setError("");
-    setSuccess("");
-
-    const amount = Number(formData.amount);
 
     if (!user?.uid) {
       setError(
         "You must be logged in to submit a deposit request."
       );
+
       return;
     }
+
+    const amount = Number(
+      formData.amount
+    );
 
     if (!formData.amount.trim()) {
-      setError("Please enter the deposit amount.");
+      setError(
+        "Please enter the deposit amount."
+      );
+
       return;
     }
 
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ) {
       setError(
-        "Please enter a valid deposit amount."
+        "Please enter a valid deposit amount greater than zero."
       );
+
       return;
     }
 
@@ -60,37 +106,36 @@ const DepositRequest = () => {
       setError(
         "Please enter the source of the deposit."
       );
+
       return;
     }
 
-    try {
-      setLoading(true);
+    const result = await dispatch(
+      submitDepositRequest({
+        customerId: user.uid,
 
-      /*
-       * Actual Firestore deposit-request creation
-       * will be connected through transactionService.js
-       * during the functionality phase.
-       *
-       * No fake database operation is performed here.
-       */
+        customerName:
+          profile?.fullName ||
+          profile?.name ||
+          user.email ||
+          "Customer",
 
-      await Promise.resolve();
+        amount,
 
-      setSuccess(
-        "Your deposit request form is valid and ready to be submitted."
-      );
-    } catch (requestError) {
-      console.error(
-        "Deposit request error:",
-        requestError
-      );
+        source:
+          formData.source,
 
-      setError(
-        requestError.message ||
-          "Unable to submit deposit request."
-      );
-    } finally {
-      setLoading(false);
+        description:
+          formData.description,
+      })
+    );
+
+    if (
+      submitDepositRequest.fulfilled.match(
+        result
+      )
+    ) {
+      setError("");
     }
   };
 
@@ -100,8 +145,8 @@ const DepositRequest = () => {
         <h1>Deposit Request</h1>
 
         <p>
-          Submit a request to deposit funds into your
-          banking account.
+          Submit a request to deposit funds into
+          your banking account.
         </p>
 
         <p>
@@ -110,6 +155,11 @@ const DepositRequest = () => {
             profile?.name ||
             user?.email ||
             "Customer"}
+        </p>
+
+        <p>
+          Your deposit will remain pending until
+          it is reviewed by an employee.
         </p>
 
         <Link to="/customer">
@@ -128,12 +178,12 @@ const DepositRequest = () => {
               id="amount"
               name="amount"
               type="number"
-              min="1"
+              min="0.01"
               step="0.01"
               value={formData.amount}
               onChange={handleChange}
               placeholder="Enter deposit amount"
-              disabled={loading}
+              disabled={requestLoading}
             />
           </div>
 
@@ -149,7 +199,7 @@ const DepositRequest = () => {
               value={formData.source}
               onChange={handleChange}
               placeholder="e.g. Salary, Cash, Transfer"
-              disabled={loading}
+              disabled={requestLoading}
             />
           </div>
 
@@ -165,28 +215,30 @@ const DepositRequest = () => {
               onChange={handleChange}
               placeholder="Additional information"
               rows="4"
-              disabled={loading}
+              disabled={requestLoading}
             />
           </div>
 
-          {error && (
+          {(error || requestError) && (
             <p role="alert">
-              {error}
+              {error || requestError}
             </p>
           )}
 
-          {success && (
+          {submitSuccess && (
             <p role="status">
-              {success}
+              Deposit request submitted successfully.
+              Your request is now pending employee
+              approval.
             </p>
           )}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={requestLoading}
           >
-            {loading
-              ? "Processing..."
+            {requestLoading
+              ? "Submitting..."
               : "Submit Deposit Request"}
           </button>
         </form>

@@ -17,6 +17,25 @@ const CustomerDashboard = () => {
     user?.email ||
     "No email available";
 
+  const role = profile?.role || "customer";
+
+  const accountStatus =
+    profile?.status || "active";
+
+  const balance =
+    typeof profile?.balance === "number"
+      ? profile.balance
+      : 0;
+
+  const formattedBalance = new Intl.NumberFormat(
+    "en-PK",
+    {
+      style: "currency",
+      currency: "PKR",
+      minimumFractionDigits: 2,
+    }
+  ).format(balance);
+
   return (
     <main>
       <section>
@@ -33,30 +52,55 @@ const CustomerDashboard = () => {
       </section>
 
       <section>
+        <h2>Account Summary</h2>
+
+        <div>
+          <div>
+            <h3>Current Balance</h3>
+
+            <p>
+              <strong>{formattedBalance}</strong>
+            </p>
+          </div>
+
+          <div>
+            <h3>Account Status</h3>
+
+            <p>
+              <strong>{accountStatus}</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
         <h2>Account Information</h2>
 
         <div>
           <p>
-            <strong>Name:</strong> {customerName}
+            <strong>Name:</strong>{" "}
+            {customerName}
           </p>
 
           <p>
-            <strong>Email:</strong> {email}
+            <strong>Email:</strong>{" "}
+            {email}
           </p>
 
           <p>
             <strong>Role:</strong>{" "}
-            {profile?.role || "customer"}
+            {role}
           </p>
 
           <p>
             <strong>Account Status:</strong>{" "}
-            {profile?.status || "active"}
+            {accountStatus}
           </p>
 
           {user?.uid && (
             <p>
-              <strong>User ID:</strong> {user.uid}
+              <strong>User ID:</strong>{" "}
+              {user.uid}
             </p>
           )}
         </div>
@@ -111,9 +155,7 @@ const CustomerDashboard = () => {
 
         <p>
           Your account is currently{" "}
-          <strong>
-            {profile?.status || "active"}
-          </strong>.
+          <strong>{accountStatus}</strong>.
         </p>
 
         <p>

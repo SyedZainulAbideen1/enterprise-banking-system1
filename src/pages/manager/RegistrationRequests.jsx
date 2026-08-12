@@ -1,101 +1,74 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-const RegistrationRequests = () => {
-  const [registrationRequests, setRegistrationRequests] =
-    useState([]);
+import {
+  approveRegistration,
+  clearRegistrationError,
+  fetchPendingRegistrationRequests,
+  rejectRegistration,
+} from "../../features/registrationRequests/registrationSlice";
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [processingId, setProcessingId] = useState(null);
+const formatDate = (timestamp) => {
+  if (!timestamp) {
+    return "Not available";
+  }
+
+  if (typeof timestamp.toDate === "function") {
+    return timestamp.toDate().toLocaleString();
+  }
+
+  if (timestamp instanceof Date) {
+    return timestamp.toLocaleString();
+  }
+
+  return "Not available";
+};
+
+const RegistrationRequests = () => {
+  const dispatch = useDispatch();
+
+  const {
+    requests,
+    loading,
+    processingId,
+    error,
+  } = useSelector(
+    (state) => state.registrationRequests
+  );
 
   useEffect(() => {
-    /*
-     * Actual registration requests will be loaded from
-     * registrationService.js and Firestore during the
-     * functionality integration phase.
-     *
-     * No fake registration requests are created here.
-     */
+    dispatch(fetchPendingRegistrationRequests());
 
-    setLoading(false);
-    setRegistrationRequests([]);
-  }, []);
+    return () => {
+      dispatch(clearRegistrationError());
+    };
+  }, [dispatch]);
 
-  const handleApprove = async (requestId) => {
-    setError("");
-    setProcessingId(requestId);
-
-    try {
-      /*
-       * Actual approval logic will be connected to
-       * registrationService.js during the functionality
-       * integration phase.
-       */
-
-      await Promise.resolve();
-
-      setRegistrationRequests((previous) =>
-        previous.map((request) =>
-          request.id === requestId
-            ? {
-                ...request,
-                status: "approved",
-              }
-            : request
-        )
-      );
-    } catch (approveError) {
-      console.error(
-        "Registration approval error:",
-        approveError
-      );
-
-      setError(
-        approveError.message ||
-          "Unable to approve registration request."
-      );
-    } finally {
-      setProcessingId(null);
+  const handleApprove = async (request) => {
+    if (!request?.id || !request?.uid) {
+      return;
     }
+
+    await dispatch(
+      approveRegistration({
+        requestId: request.id,
+        uid: request.uid,
+      })
+    );
   };
 
-  const handleReject = async (requestId) => {
-    setError("");
-    setProcessingId(requestId);
-
-    try {
-      /*
-       * Actual rejection logic will be connected to
-       * registrationService.js during the functionality
-       * integration phase.
-       */
-
-      await Promise.resolve();
-
-      setRegistrationRequests((previous) =>
-        previous.map((request) =>
-          request.id === requestId
-            ? {
-                ...request,
-                status: "rejected",
-              }
-            : request
-        )
-      );
-    } catch (rejectError) {
-      console.error(
-        "Registration rejection error:",
-        rejectError
-      );
-
-      setError(
-        rejectError.message ||
-          "Unable to reject registration request."
-      );
-    } finally {
-      setProcessingId(null);
+  const handleReject = async (request) => {
+    if (!request?.id || !request?.uid) {
+      return;
     }
+
+    await dispatch(
+      rejectRegistration({
+        requestId: request.id,
+        uid: request.uid,
+      })
+    );
   };
 
   return (
@@ -104,8 +77,8 @@ const RegistrationRequests = () => {
         <h1>Registration Requests</h1>
 
         <p>
-          Review new customer registration requests and
-          approve or reject them.
+          Review new customer registration requests
+          and approve or reject them.
         </p>
 
         <Link to="/manager">
@@ -126,7 +99,7 @@ const RegistrationRequests = () => {
 
         {!loading &&
           !error &&
-          registrationRequests.length === 0 && (
+          requests.length === 0 && (
             <div>
               <h2>No Registration Requests</h2>
 
@@ -139,13 +112,14 @@ const RegistrationRequests = () => {
 
         {!loading &&
           !error &&
-          registrationRequests.length > 0 && (
+          requests.length > 0 && (
             <div>
               <table>
                 <thead>
                   <tr>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Requested Role</th>
                     <th>Status</th>
                     <th>Requested At</th>
                     <th>Actions</th>
@@ -153,15 +127,26 @@ const RegistrationRequests = () => {
                 </thead>
 
                 <tbody>
-                  {registrationRequests.map(
-                    (request) => (
+                  {requests.map((request) => {
+                    const isProcessing =
+                      processingId === request.id;
+
+                    return (
                       <tr key={request.id}>
                         <td>
-                          {request.name}
+                          {request.fullName ||
+                            request.name ||
+                            "Not available"}
                         </td>
 
                         <td>
-                          {request.email}
+                          {request.email ||
+                            "Not available"}
+                        </td>
+
+                        <td>
+                          {request.requestedRole ||
+                            "customer"}
                         </td>
 
                         <td>
@@ -169,21 +154,20 @@ const RegistrationRequests = () => {
                         </td>
 
                         <td>
-                          {request.createdAt ||
-                            "Not available"}
+                          {formatDate(
+                            request.createdAt
+                          )}
                         </td>
 
                         <td>
                           <button
                             type="button"
                             onClick={() =>
-                              handleApprove(request.id)
+                              handleApprove(request)
                             }
-                            disabled={
-                              processingId === request.id
-                            }
+                            disabled={isProcessing}
                           >
-                            {processingId === request.id
+                            {isProcessing
                               ? "Processing..."
                               : "Approve"}
                           </button>
@@ -191,18 +175,16 @@ const RegistrationRequests = () => {
                           <button
                             type="button"
                             onClick={() =>
-                              handleReject(request.id)
+                              handleReject(request)
                             }
-                            disabled={
-                              processingId === request.id
-                            }
+                            disabled={isProcessing}
                           >
                             Reject
                           </button>
                         </td>
                       </tr>
-                    )
-                  )}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

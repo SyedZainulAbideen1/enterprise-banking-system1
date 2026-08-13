@@ -1,126 +1,197 @@
 import { useState } from "react";
+
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  submitLoanRequest,
+} from "../../features/loans/loanSlice";
+
 
 const RequestLoan = () => {
-  const { user, profile } = useSelector(
+  const dispatch = useDispatch();
+
+  const {
+    user,
+    profile,
+  } = useSelector(
     (state) => state.auth
   );
 
-  const [formData, setFormData] = useState({
-    amount: "",
-    purpose: "",
-    duration: "",
-  });
+  const {
+    submitLoading,
+    submitError,
+    submitSuccess,
+  } = useSelector(
+    (state) => state.loans
+  );
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const [formData, setFormData] =
+    useState({
+      amount: "",
+      purpose: "",
+      duration: "",
+      notes: "",
+    });
 
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
+
+  const [error, setError] =
+    useState("");
+
+
+  const handleChange = (
+    event
+  ) => {
+    const {
+      name,
+      value,
+    } = event.target;
+
+    setFormData(
+      (previous) => ({
+        ...previous,
+        [name]: value,
+      })
+    );
 
     setError("");
-    setSuccess("");
   };
 
-  const handleSubmit = async (event) => {
+
+  const handleSubmit = async (
+    event
+  ) => {
     event.preventDefault();
 
     setError("");
-    setSuccess("");
 
-    const amount = Number(formData.amount);
+    const amount =
+      Number(formData.amount);
+
+    const duration =
+      Number(formData.duration);
+
 
     if (!user?.uid) {
       setError(
         "You must be logged in to request a loan."
       );
+
       return;
     }
+
 
     if (!formData.amount.trim()) {
-      setError("Please enter the loan amount.");
+      setError(
+        "Please enter the loan amount."
+      );
+
       return;
     }
 
-    if (!Number.isFinite(amount) || amount <= 0) {
+
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ) {
       setError(
         "Please enter a valid loan amount."
       );
+
       return;
     }
 
+
     if (!formData.purpose.trim()) {
-      setError("Please enter the loan purpose.");
+      setError(
+        "Please enter the loan purpose."
+      );
+
       return;
     }
+
 
     if (!formData.duration.trim()) {
       setError(
         "Please enter the loan duration."
       );
+
       return;
     }
 
-    const duration = Number(formData.duration);
 
-    if (!Number.isInteger(duration) || duration <= 0) {
+    if (
+      !Number.isInteger(duration) ||
+      duration <= 0
+    ) {
       setError(
         "Please enter a valid duration in months."
       );
+
       return;
     }
 
-    try {
-      setLoading(true);
 
-      /*
-       * Firestore loan-request submission will be
-       * connected through loanService.js in the
-       * functionality phase.
-       *
-       * No fake database operation is performed here.
-       */
+    const result =
+      await dispatch(
+        submitLoanRequest({
+          customerId:
+            user.uid,
 
-      await Promise.resolve();
+          customerName:
+            profile?.fullName ||
+            profile?.name ||
+            user.email ||
+            "Customer",
 
-      setSuccess(
-        "Your loan request form is valid and ready to be submitted."
+          amount,
+
+          purpose:
+            formData.purpose,
+
+          duration,
+
+          notes:
+            formData.notes,
+        })
       );
-    } catch (requestError) {
-      console.error(
-        "Loan request error:",
-        requestError
-      );
 
-      setError(
-        requestError.message ||
-          "Unable to submit loan request."
-      );
-    } finally {
-      setLoading(false);
+
+    if (
+      submitLoanRequest.fulfilled.match(
+        result
+      )
+    ) {
+      setFormData({
+        amount: "",
+        purpose: "",
+        duration: "",
+        notes: "",
+      });
     }
   };
+
 
   return (
     <main>
       <section>
-        <h1>Request a Loan</h1>
+        <h1>
+          Request a Loan
+        </h1>
 
         <p>
-          Submit a request for a new loan.
-          Your request will be reviewed according
-          to the banking system workflow.
+          Submit a request for a new
+          loan. Your request will be
+          reviewed according to the
+          banking system workflow.
         </p>
 
         <p>
-          <strong>Customer:</strong>{" "}
+          <strong>
+            Customer:
+          </strong>{" "}
           {profile?.fullName ||
             profile?.name ||
             user?.email ||
@@ -132,8 +203,11 @@ const RequestLoan = () => {
         </Link>
       </section>
 
+
       <section>
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={handleSubmit}
+        >
           <div>
             <label htmlFor="amount">
               Loan Amount
@@ -145,12 +219,19 @@ const RequestLoan = () => {
               type="number"
               min="1"
               step="0.01"
-              value={formData.amount}
-              onChange={handleChange}
+              value={
+                formData.amount
+              }
+              onChange={
+                handleChange
+              }
               placeholder="Enter loan amount"
-              disabled={loading}
+              disabled={
+                submitLoading
+              }
             />
           </div>
+
 
           <div>
             <label htmlFor="purpose">
@@ -160,13 +241,20 @@ const RequestLoan = () => {
             <textarea
               id="purpose"
               name="purpose"
-              value={formData.purpose}
-              onChange={handleChange}
+              value={
+                formData.purpose
+              }
+              onChange={
+                handleChange
+              }
               placeholder="Explain the purpose of the loan"
               rows="4"
-              disabled={loading}
+              disabled={
+                submitLoading
+              }
             />
           </div>
+
 
           <div>
             <label htmlFor="duration">
@@ -179,12 +267,42 @@ const RequestLoan = () => {
               type="number"
               min="1"
               step="1"
-              value={formData.duration}
-              onChange={handleChange}
+              value={
+                formData.duration
+              }
+              onChange={
+                handleChange
+              }
               placeholder="Enter duration in months"
-              disabled={loading}
+              disabled={
+                submitLoading
+              }
             />
           </div>
+
+
+          <div>
+            <label htmlFor="notes">
+              Notes (Optional)
+            </label>
+
+            <textarea
+              id="notes"
+              name="notes"
+              value={
+                formData.notes
+              }
+              onChange={
+                handleChange
+              }
+              placeholder="Additional notes"
+              rows="3"
+              disabled={
+                submitLoading
+              }
+            />
+          </div>
+
 
           {error && (
             <p role="alert">
@@ -192,18 +310,31 @@ const RequestLoan = () => {
             </p>
           )}
 
-          {success && (
-            <p role="status">
-              {success}
+
+          {submitError && (
+            <p role="alert">
+              {submitError}
             </p>
           )}
 
+
+          {submitSuccess && (
+            <p role="status">
+              Loan request submitted
+              successfully. Your request
+              is now pending approval.
+            </p>
+          )}
+
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={
+              submitLoading
+            }
           >
-            {loading
-              ? "Processing..."
+            {submitLoading
+              ? "Submitting..."
               : "Submit Loan Request"}
           </button>
         </form>
@@ -211,5 +342,6 @@ const RequestLoan = () => {
     </main>
   );
 };
+
 
 export default RequestLoan;

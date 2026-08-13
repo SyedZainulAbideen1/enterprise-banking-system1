@@ -1,31 +1,110 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuth } from "firebase/auth";
+
+import {
+  fetchPendingLoanRequests,
+  approveLoan,
+  rejectLoan,
+  clearLoanError,
+} from "../../features/loans/loanSlice";
 
 const LoanRequests = () => {
-  const [loanRequests, setLoanRequests] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const dispatch = useDispatch();
+
+  const {
+    requests,
+    loading,
+    actionLoading,
+    error,
+    actionError,
+    successMessage,
+  } = useSelector(
+    (state) => state.loans
+  );
 
   useEffect(() => {
-    /*
-     * Actual loan requests will be loaded from
-     * loanService.js and Firestore during the
-     * functionality integration phase.
-     *
-     * No fake loan requests are created here.
-     */
+    dispatch(
+      fetchPendingLoanRequests()
+    );
 
-    setLoading(false);
-    setLoanRequests([]);
-  }, []);
+    return () => {
+      dispatch(clearLoanError());
+    };
+  }, [dispatch]);
+
+
+  const handleApprove = async (
+    loanId
+  ) => {
+    const auth = getAuth();
+
+    const employeeId =
+      auth.currentUser?.uid;
+
+    if (!employeeId) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        "Are you sure you want to approve this loan?"
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    await dispatch(
+      approveLoan({
+        loanId,
+        employeeId,
+      })
+    );
+  };
+
+
+  const handleReject = async (
+    loanId
+  ) => {
+    const auth = getAuth();
+
+    const employeeId =
+      auth.currentUser?.uid;
+
+    if (!employeeId) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        "Are you sure you want to reject this loan?"
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    await dispatch(
+      rejectLoan({
+        loanId,
+        employeeId,
+      })
+    );
+  };
+
 
   return (
     <main>
       <section>
-        <h1>Loan Requests</h1>
+        <h1>
+          Loan Requests
+        </h1>
 
         <p>
-          Review loan requests submitted by customers.
+          Review and process pending
+          customer loan requests.
         </p>
 
         <Link to="/employee">
@@ -33,10 +112,14 @@ const LoanRequests = () => {
         </Link>
       </section>
 
+
       <section>
         {loading && (
-          <p>Loading loan requests...</p>
+          <p>
+            Loading loan requests...
+          </p>
         )}
+
 
         {error && (
           <p role="alert">
@@ -44,53 +127,103 @@ const LoanRequests = () => {
           </p>
         )}
 
+
+        {actionError && (
+          <p role="alert">
+            {actionError}
+          </p>
+        )}
+
+
+        {successMessage && (
+          <p role="status">
+            {successMessage}
+          </p>
+        )}
+
+
         {!loading &&
           !error &&
-          loanRequests.length === 0 && (
+          requests.length === 0 && (
             <div>
-              <h2>No Loan Requests</h2>
+              <h2>
+                No Loan Requests
+              </h2>
 
               <p>
-                There are currently no loan requests
-                available for review.
+                There are currently no
+                loan requests available
+                for review.
               </p>
             </div>
           )}
 
+
         {!loading &&
           !error &&
-          loanRequests.length > 0 && (
+          requests.length > 0 && (
             <div>
               <table>
                 <thead>
                   <tr>
-                    <th>Customer</th>
-                    <th>Amount</th>
-                    <th>Purpose</th>
-                    <th>Duration</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th>
+                      Customer
+                    </th>
+
+                    <th>
+                      Amount
+                    </th>
+
+                    <th>
+                      Purpose
+                    </th>
+
+                    <th>
+                      Duration
+                    </th>
+
+                    <th>
+                      Status
+                    </th>
+
+                    <th>
+                      Action
+                    </th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {loanRequests.map(
+                  {requests.map(
                     (loanRequest) => (
-                      <tr key={loanRequest.id}>
+                      <tr
+                        key={
+                          loanRequest.id
+                        }
+                      >
                         <td>
-                          {loanRequest.customerName}
+                          {loanRequest.customerName ||
+                            "Customer"}
                         </td>
 
                         <td>
-                          {loanRequest.amount}
+                          PKR{" "}
+                          {Number(
+                            loanRequest.amount ||
+                              0
+                          ).toLocaleString(
+                            "en-PK"
+                          )}
                         </td>
 
                         <td>
-                          {loanRequest.purpose}
+                          {loanRequest.purpose ||
+                            "Not provided"}
                         </td>
 
                         <td>
-                          {loanRequest.duration} months
+                          {loanRequest.duration ||
+                            0}{" "}
+                          months
                         </td>
 
                         <td>
@@ -100,9 +233,32 @@ const LoanRequests = () => {
                         <td>
                           <button
                             type="button"
-                            disabled
+                            disabled={
+                              actionLoading
+                            }
+                            onClick={() =>
+                              handleApprove(
+                                loanRequest.id
+                              )
+                            }
                           >
-                            Review
+                            {actionLoading
+                              ? "Processing..."
+                              : "Approve"}
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={
+                              actionLoading
+                            }
+                            onClick={() =>
+                              handleReject(
+                                loanRequest.id
+                              )
+                            }
+                          >
+                            Reject
                           </button>
                         </td>
                       </tr>

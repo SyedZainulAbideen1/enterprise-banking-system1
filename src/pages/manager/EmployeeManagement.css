@@ -1,0 +1,703 @@
+.manager-employee-management {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 32px;
+  box-sizing: border-box;
+  color: #172033;
+}
+
+.manager-employee-management *,
+.manager-employee-management *::before,
+.manager-employee-management *::after {
+  box-sizing: border-box;
+}
+
+/* Hero */
+
+.manager-employee-management__hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  min-height: 225px;
+  padding: 35px 38px;
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    #091f3a 0%,
+    #123f6b 65%,
+    #18547f 100%
+  );
+  color: #ffffff;
+  box-shadow: 0 16px 40px rgba(9, 31, 58, 0.16);
+}
+
+.manager-employee-management__hero-content {
+  max-width: 800px;
+}
+
+.manager-employee-management__back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 22px;
+  color: #bfd8ed;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.manager-employee-management__back-link:hover {
+  color: #ffffff;
+}
+
+.manager-employee-management__back-link:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.2);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.manager-employee-management__back-link span {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.manager-employee-management__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  color: #bdd9f2;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.manager-employee-management__eyebrow > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f0b84b;
+  box-shadow: 0 0 0 4px rgba(240, 184, 75, 0.14);
+}
+
+.manager-employee-management__hero h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(29px, 4vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.manager-employee-management__hero p {
+  max-width: 650px;
+  margin: 10px 0 0;
+  color: #c7dbea;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.manager-employee-management__hero-icon {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #dcecf9;
+}
+
+.manager-employee-management__hero-icon svg {
+  width: 38px;
+  height: 38px;
+}
+
+/* Sections */
+
+.manager-employee-management__content {
+  padding-top: 30px;
+}
+
+.manager-employee-management__content--records {
+  padding-top: 34px;
+}
+
+.manager-employee-management__section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.manager-employee-management__section-heading > div:first-child > span {
+  display: block;
+  margin-bottom: 4px;
+  color: #23659d;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.manager-employee-management__section-heading h2 {
+  margin: 0;
+  color: #1b2b40;
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.manager-employee-management__record-count {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid #e0e8ef;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.manager-employee-management__record-count strong {
+  color: #245f8f;
+  font-size: 15px;
+}
+
+.manager-employee-management__record-count span {
+  color: #84909f;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.manager-employee-management__directory-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid #dcece3;
+  border-radius: 9px;
+  background: #f6fbf8;
+  color: #357752;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.manager-employee-management__directory-status > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #39a36a;
+}
+
+/* Form card */
+
+.manager-employee-management__form-card {
+  padding: 27px;
+  border: 1px solid #e1e8ef;
+  border-radius: 17px;
+  background: #ffffff;
+  box-shadow: 0 7px 25px rgba(20, 42, 72, 0.055);
+}
+
+.manager-employee-management__form-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 25px;
+}
+
+.manager-employee-management__form-icon {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #edf5fc;
+  color: #21689e;
+}
+
+.manager-employee-management__form-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.manager-employee-management__form-heading h3 {
+  margin: 0 0 4px;
+  color: #26364c;
+  font-size: 15px;
+}
+
+.manager-employee-management__form-heading p {
+  margin: 0;
+  color: #84909f;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.manager-employee-management__form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 20px;
+}
+
+.manager-employee-management__field {
+  display: flex;
+  flex-direction: column;
+}
+
+.manager-employee-management__field--full {
+  grid-column: 1 / -1;
+}
+
+.manager-employee-management__field label {
+  margin-bottom: 7px;
+  color: #35455a;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.manager-employee-management__field input {
+  width: 100%;
+  min-height: 43px;
+  padding: 0 13px;
+  border: 1px solid #dce4eb;
+  border-radius: 8px;
+  outline: none;
+  background: #fbfcfd;
+  color: #26364c;
+  font-family: inherit;
+  font-size: 11px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.manager-employee-management__field input::placeholder {
+  color: #a4adb8;
+}
+
+.manager-employee-management__field input:hover:not(:disabled) {
+  border-color: #c7d4df;
+  background: #ffffff;
+}
+
+.manager-employee-management__field input:focus {
+  border-color: #3377aa;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(51, 119, 170, 0.1);
+}
+
+.manager-employee-management__field input:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.manager-employee-management__field-hint {
+  margin-top: 5px;
+  color: #8d98a6;
+  font-size: 8px;
+}
+
+/* Messages */
+
+.manager-employee-management__message {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 20px;
+  padding: 11px 13px;
+  border-radius: 8px;
+}
+
+.manager-employee-management__message > span {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.manager-employee-management__message p {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.manager-employee-management__message--error {
+  border: 1px solid #f1d9d9;
+  background: #fff8f8;
+  color: #9a3b3b;
+}
+
+.manager-employee-management__message--error > span {
+  background: #f6dede;
+  color: #a33d3d;
+}
+
+.manager-employee-management__message--success {
+  border: 1px solid #d8eadf;
+  background: #f6fbf8;
+  color: #31724d;
+}
+
+.manager-employee-management__message--success > span {
+  background: #dcefe3;
+  color: #2f7b4f;
+}
+
+/* Form actions */
+
+.manager-employee-management__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.manager-employee-management__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 160px;
+  min-height: 41px;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 8px;
+  background: #155b8c;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 5px 13px rgba(21, 91, 140, 0.18);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.manager-employee-management__submit:hover:not(:disabled) {
+  background: #104b75;
+  transform: translateY(-1px);
+  box-shadow: 0 7px 17px rgba(21, 91, 140, 0.22);
+}
+
+.manager-employee-management__submit:focus-visible {
+  outline: 3px solid rgba(21, 91, 140, 0.18);
+  outline-offset: 2px;
+}
+
+.manager-employee-management__submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.manager-employee-management__submit > span:first-child {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.manager-employee-management__button-spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: manager-employee-management-spin 0.7s linear infinite;
+}
+
+/* Table card */
+
+.manager-employee-management__table-card {
+  overflow: hidden;
+  border: 1px solid #e1e8ef;
+  border-radius: 17px;
+  background: #ffffff;
+  box-shadow: 0 7px 25px rgba(20, 42, 72, 0.055);
+}
+
+.manager-employee-management__table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.manager-employee-management__table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+}
+
+.manager-employee-management__table th {
+  padding: 14px 17px;
+  border-bottom: 1px solid #e5ebf0;
+  background: #f8fafc;
+  color: #748194;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.manager-employee-management__table td {
+  padding: 15px 17px;
+  border-bottom: 1px solid #edf0f3;
+  color: #536177;
+  font-size: 10px;
+  vertical-align: middle;
+}
+
+.manager-employee-management__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.manager-employee-management__table tbody tr {
+  transition: background 0.18s ease;
+}
+
+.manager-employee-management__table tbody tr:hover {
+  background: #fbfdff;
+}
+
+.manager-employee-management__employee {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.manager-employee-management__avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: #edf5fc;
+  color: #21689e;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.manager-employee-management__employee strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #2b3c52;
+  font-size: 11px;
+}
+
+.manager-employee-management__employee span {
+  color: #8a95a3;
+  font-size: 8px;
+}
+
+.manager-employee-management__table-text {
+  color: #536177;
+}
+
+.manager-employee-management__role-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 23px;
+  padding: 0 8px;
+  border: 1px solid #dce7f0;
+  border-radius: 6px;
+  background: #f3f8fc;
+  color: #3c6787;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.manager-employee-management__status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #287d51;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.manager-employee-management__status-badge > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #35a36a;
+}
+
+.manager-employee-management__salary {
+  color: #29425c;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.manager-employee-management__responsibility {
+  display: inline-block;
+  max-width: 220px;
+  color: #657286;
+  line-height: 1.5;
+}
+
+/* States */
+
+.manager-employee-management__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 40px 25px;
+  flex-direction: column;
+  text-align: center;
+}
+
+.manager-employee-management__state h3 {
+  margin: 12px 0 6px;
+  color: #2b3b50;
+  font-size: 17px;
+}
+
+.manager-employee-management__state p {
+  max-width: 400px;
+  margin: 0;
+  color: #7e8998;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.manager-employee-management__state-label {
+  margin-top: 14px;
+  color: #23659d;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.manager-employee-management__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e2ebf2;
+  border-top-color: #21689e;
+  border-radius: 50%;
+  animation: manager-employee-management-spin 0.8s linear infinite;
+}
+
+.manager-employee-management__empty-icon {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 17px;
+  background: #edf5fc;
+  color: #24699d;
+}
+
+.manager-employee-management__empty-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+@keyframes manager-employee-management-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 800px) {
+  .manager-employee-management {
+    padding: 22px;
+  }
+
+  .manager-employee-management__hero {
+    align-items: flex-start;
+    min-height: auto;
+    padding: 28px;
+  }
+
+  .manager-employee-management__hero-icon {
+    width: 58px;
+    height: 58px;
+  }
+
+  .manager-employee-management__hero-icon svg {
+    width: 29px;
+    height: 29px;
+  }
+
+  .manager-employee-management__form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-employee-management__field--full {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 540px) {
+  .manager-employee-management {
+    padding: 16px 13px;
+  }
+
+  .manager-employee-management__hero {
+    padding: 22px 20px;
+    border-radius: 16px;
+  }
+
+  .manager-employee-management__back-link {
+    margin-bottom: 18px;
+  }
+
+  .manager-employee-management__hero h1 {
+    font-size: 28px;
+  }
+
+  .manager-employee-management__hero p {
+    font-size: 11px;
+  }
+
+  .manager-employee-management__hero-icon {
+    display: none;
+  }
+
+  .manager-employee-management__content {
+    padding-top: 22px;
+  }
+
+  .manager-employee-management__section-heading {
+    align-items: flex-start;
+  }
+
+  .manager-employee-management__form-card {
+    padding: 20px 17px;
+    border-radius: 14px;
+  }
+
+  .manager-employee-management__form-heading {
+    align-items: flex-start;
+  }
+
+  .manager-employee-management__form-actions {
+    justify-content: stretch;
+  }
+
+  .manager-employee-management__submit {
+    width: 100%;
+  }
+
+  .manager-employee-management__table-card {
+    border-radius: 14px;
+  }
+}

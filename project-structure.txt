@@ -73,6 +73,8 @@ D:.
 |   |           firebase_firestore.js.map
 |   |           index.esm-DLYj8Ffl.js
 |   |           index.esm-DLYj8Ffl.js.map
+|   |           lucide-react.js
+|   |           lucide-react.js.map
 |   |           package.json
 |   |           react-dom.js
 |   |           react-dom.js.map
@@ -88,7 +90,7 @@ D:.
 |   |           react_jsx-dev-runtime.js.map
 |   |           react_jsx-runtime.js
 |   |           react_jsx-runtime.js.map
-|   |           rolldown-runtime-BPOCksWG.js
+|   |           rolldown-runtime-DC62tzP2.js
 |   |           _metadata.json
 |   |           
 |   +---.vite-temp
@@ -28004,9 +28006,12 @@ D:.
     +---components
     |   +---common
     |   |       Button.jsx
+    |   |       Footer.css
+    |   |       Footer.jsx
     |   |       Input.jsx
     |   |       Loading.jsx
     |   |       Modal.jsx
+    |   |       Navbar.css
     |   |       Navbar.jsx
     |   |       ProtectedRoute.jsx
     |   |       Sidebar.jsx
@@ -28052,38 +28057,60 @@ D:.
     |       
     +---pages
     |   +---auth
+    |   |       AccountRejected.css
     |   |       AccountRejected.jsx
+    |   |       Login.css
     |   |       Login.jsx
+    |   |       PendingApproval.css
     |   |       PendingApproval.jsx
+    |   |       Register.css
     |   |       Register.jsx
     |   |       
     |   +---customer
+    |   |   |   CustomerDashboard.css
     |   |   |   CustomerDashboard.jsx
+    |   |   |   DepositRequest.css
     |   |   |   DepositRequest.jsx
+    |   |   |   DonationRequest.css
     |   |   |   DonationRequest.jsx
+    |   |   |   LoanDetails.css
     |   |   |   LoanDetails.jsx
+    |   |   |   RequestLoan.css
     |   |   |   RequestLoan.jsx
+    |   |   |   TransactionHistory.css
     |   |   |   TransactionHistory.jsx
+    |   |   |   WithdrawRequest.css
     |   |   |   WithdrawRequest.jsx
     |   |   |   
     |   |   \---loan
     |   |           RepayLoan.jsx
     |   |           
     |   +---employee
+    |   |       CreateCustomer.css
     |   |       CreateCustomer.jsx
+    |   |       CustomerDetails.css
     |   |       CustomerDetails.jsx
+    |   |       CustomerList.css
     |   |       CustomerList.jsx
+    |   |       EmployeeDashboard.css
     |   |       EmployeeDashboard.jsx
+    |   |       LoanRequests.css
     |   |       LoanRequests.jsx
+    |   |       TransactionRequests.css
     |   |       TransactionRequests.jsx
     |   |       
-    |   \---manager
-    |           CustomerManagement.jsx
-    |           EmployeeManagement.jsx
-    |           LoanRequests.jsx
-    |           ManagerDashboard.jsx
-    |           RegistrationRequests.jsx
-    |           TransactionOversight.jsx
+    |   +---manager
+    |   |       CustomerManagement.jsx
+    |   |       EmployeeManagement.jsx
+    |   |       LoanRequests.jsx
+    |   |       ManagerDashboard.css
+    |   |       ManagerDashboard.jsx
+    |   |       RegistrationRequests.jsx
+    |   |       TransactionOversight.jsx
+    |   |       
+    |   \---public
+    |           Home.css
+    |           Home.jsx
     |           
     +---routes
     |       AppRoutes.jsx

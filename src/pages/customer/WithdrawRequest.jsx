@@ -1,33 +1,31 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+
+import { createWithdrawalRequest } from "../../features/transactions/transactionService";
 
 const WithdrawRequest = () => {
-  const { user, profile } = useSelector(
-    (state) => state.auth
+  const user = useSelector(
+    (state) => state.auth.user
   );
 
-  const [formData, setFormData] = useState({
-    amount: "",
-    reason: "",
-    description: "",
-  });
+  const profile = useSelector(
+    (state) => state.auth.profile
+  );
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [reason, setReason] = useState("");
+  const [description, setDescription] =
+    useState("");
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const [loading, setLoading] =
+    useState(false);
 
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
+  const [error, setError] =
+    useState("");
 
-    setError("");
-    setSuccess("");
-  };
+  const [success, setSuccess] =
+    useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -35,49 +33,57 @@ const WithdrawRequest = () => {
     setError("");
     setSuccess("");
 
-    const amount = Number(formData.amount);
-
     if (!user?.uid) {
       setError(
-        "You must be logged in to submit a withdrawal request."
+        "Customer account could not be identified."
       );
       return;
     }
 
-    if (!formData.amount.trim()) {
-      setError("Please enter the withdrawal amount.");
-      return;
-    }
+    const numericAmount = Number(amount);
 
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (
+      !Number.isFinite(numericAmount) ||
+      numericAmount <= 0
+    ) {
       setError(
-        "Please enter a valid withdrawal amount."
+        "Withdrawal amount must be greater than zero."
       );
       return;
     }
 
-    if (!formData.reason.trim()) {
+    if (!reason.trim()) {
       setError(
-        "Please enter the reason for withdrawal."
+        "Withdrawal reason is required."
       );
       return;
     }
+
+    setLoading(true);
 
     try {
-      setLoading(true);
+      await createWithdrawalRequest({
+        customerId: user.uid,
 
-      /*
-       * Actual Firestore withdrawal-request creation
-       * will be connected through transactionService.js
-       * during the functionality phase.
-       *
-       * No fake database operation is performed here.
-       */
+        customerName:
+          profile?.fullName ||
+          user.displayName ||
+          "Customer",
 
-      await Promise.resolve();
+        amount: numericAmount,
+
+        reason: reason.trim(),
+
+        description:
+          description.trim(),
+      });
+
+      setAmount("");
+      setReason("");
+      setDescription("");
 
       setSuccess(
-        "Your withdrawal request form is valid and ready to be submitted."
+        "Withdrawal request submitted successfully. Your request is now pending employee approval."
       );
     } catch (requestError) {
       console.error(
@@ -86,7 +92,7 @@ const WithdrawRequest = () => {
       );
 
       setError(
-        requestError.message ||
+        requestError?.message ||
           "Unable to submit withdrawal request."
       );
     } finally {
@@ -97,23 +103,15 @@ const WithdrawRequest = () => {
   return (
     <main>
       <section>
-        <h1>Withdraw Request</h1>
+        <h1>Withdrawal Request</h1>
 
         <p>
-          Submit a request to withdraw funds from your
-          banking account.
-        </p>
-
-        <p>
-          <strong>Customer:</strong>{" "}
-          {profile?.fullName ||
-            profile?.name ||
-            user?.email ||
-            "Customer"}
+          Submit a withdrawal request for
+          employee approval.
         </p>
 
         <Link to="/customer">
-          Back to Dashboard
+          Back to Customer Dashboard
         </Link>
       </section>
 
@@ -126,14 +124,15 @@ const WithdrawRequest = () => {
 
             <input
               id="amount"
-              name="amount"
               type="number"
-              min="1"
+              min="0.01"
               step="0.01"
-              value={formData.amount}
-              onChange={handleChange}
-              placeholder="Enter withdrawal amount"
+              value={amount}
+              onChange={(event) =>
+                setAmount(event.target.value)
+              }
               disabled={loading}
+              required
             />
           </div>
 
@@ -144,12 +143,14 @@ const WithdrawRequest = () => {
 
             <input
               id="reason"
-              name="reason"
               type="text"
-              value={formData.reason}
-              onChange={handleChange}
-              placeholder="Enter reason for withdrawal"
+              value={reason}
+              onChange={(event) =>
+                setReason(event.target.value)
+              }
               disabled={loading}
+              placeholder="e.g. Personal expenses"
+              required
             />
           </div>
 
@@ -160,12 +161,15 @@ const WithdrawRequest = () => {
 
             <textarea
               id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Additional information"
-              rows="4"
+              value={description}
+              onChange={(event) =>
+                setDescription(
+                  event.target.value
+                )
+              }
               disabled={loading}
+              placeholder="Optional details"
+              rows="4"
             />
           </div>
 
@@ -186,7 +190,7 @@ const WithdrawRequest = () => {
             disabled={loading}
           >
             {loading
-              ? "Processing..."
+              ? "Submitting..."
               : "Submit Withdrawal Request"}
           </button>
         </form>

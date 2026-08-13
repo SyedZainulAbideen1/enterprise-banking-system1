@@ -1,106 +1,96 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuth } from "firebase/auth";
+
+import {
+  fetchPendingLoanRequests,
+  approveLoan,
+  rejectLoan,
+  clearLoanError,
+} from "../../features/loans/loanSlice";
 
 const LoanRequests = () => {
-  const [loanRequests, setLoanRequests] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [processingId, setProcessingId] = useState(null);
+  const dispatch = useDispatch();
+
+  const {
+    requests = [],
+    loading,
+    actionLoading,
+    error,
+    actionError,
+    successMessage,
+  } = useSelector(
+    (state) => state.loans || {}
+  );
 
   useEffect(() => {
-    /*
-     * Actual loan requests will be loaded from
-     * loanService.js and Firestore during the
-     * functionality integration phase.
-     *
-     * No fake loan requests are created here.
-     */
+    dispatch(fetchPendingLoanRequests());
 
-    setLoading(false);
-    setLoanRequests([]);
-  }, []);
+    return () => {
+      dispatch(clearLoanError());
+    };
+  }, [dispatch]);
 
-  const handleApprove = async (requestId) => {
-    setError("");
-    setProcessingId(requestId);
-
-    try {
-      /*
-       * Actual approval logic will be connected to
-       * loanService.js during the functionality phase.
-       */
-
-      await Promise.resolve();
-
-      setLoanRequests((previous) =>
-        previous.map((request) =>
-          request.id === requestId
-            ? {
-                ...request,
-                status: "approved",
-              }
-            : request
-        )
-      );
-    } catch (approveError) {
-      console.error(
-        "Loan approval error:",
-        approveError
-      );
-
-      setError(
-        approveError.message ||
-          "Unable to approve loan request."
-      );
-    } finally {
-      setProcessingId(null);
-    }
+  const getManagerId = () => {
+    const auth = getAuth();
+    return auth.currentUser?.uid;
   };
 
-  const handleReject = async (requestId) => {
-    setError("");
-    setProcessingId(requestId);
+  const handleApprove = async (loanId) => {
+    const managerId = getManagerId();
 
-    try {
-      /*
-       * Actual rejection logic will be connected to
-       * loanService.js during the functionality phase.
-       */
-
-      await Promise.resolve();
-
-      setLoanRequests((previous) =>
-        previous.map((request) =>
-          request.id === requestId
-            ? {
-                ...request,
-                status: "rejected",
-              }
-            : request
-        )
-      );
-    } catch (rejectError) {
-      console.error(
-        "Loan rejection error:",
-        rejectError
-      );
-
-      setError(
-        rejectError.message ||
-          "Unable to reject loan request."
-      );
-    } finally {
-      setProcessingId(null);
+    if (!managerId) {
+      return;
     }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to approve this loan?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    await dispatch(
+      approveLoan({
+        loanId,
+        managerId,
+      })
+    );
+  };
+
+  const handleReject = async (loanId) => {
+    const managerId = getManagerId();
+
+    if (!managerId) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to reject this loan?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    await dispatch(
+      rejectLoan({
+        loanId,
+        managerId,
+      })
+    );
   };
 
   return (
     <main>
       <section>
-        <h1>Loan Requests</h1>
+        <h1>High-Value Loan Requests</h1>
 
         <p>
-          Review and manage customer loan requests.
+          Review loan requests that require
+          Manager approval.
         </p>
 
         <Link to="/manager">
@@ -119,22 +109,35 @@ const LoanRequests = () => {
           </p>
         )}
 
+        {actionError && (
+          <p role="alert">
+            {actionError}
+          </p>
+        )}
+
+        {successMessage && (
+          <p role="status">
+            {successMessage}
+          </p>
+        )}
+
         {!loading &&
           !error &&
-          loanRequests.length === 0 && (
+          requests.length === 0 && (
             <div>
-              <h2>No Loan Requests</h2>
+              <h2>No High-Value Loan Requests</h2>
 
               <p>
-                There are currently no loan requests
-                available for management.
+                There are currently no loan
+                requests available for Manager
+                approval.
               </p>
             </div>
           )}
 
         {!loading &&
           !error &&
-          loanRequests.length > 0 && (
+          requests.length > 0 && (
             <div>
               <table>
                 <thead>
@@ -144,27 +147,32 @@ const LoanRequests = () => {
                     <th>Purpose</th>
                     <th>Duration</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {loanRequests.map((request) => (
+                  {requests.map((request) => (
                     <tr key={request.id}>
                       <td>
-                        {request.customerName}
+                        {request.customerName ||
+                          "Customer"}
                       </td>
 
                       <td>
-                        {request.amount}
+                        PKR{" "}
+                        {Number(
+                          request.amount || 0
+                        ).toLocaleString("en-PK")}
                       </td>
 
                       <td>
-                        {request.purpose}
+                        {request.purpose ||
+                          "Not provided"}
                       </td>
 
                       <td>
-                        {request.duration} months
+                        {request.duration || 0} months
                       </td>
 
                       <td>
@@ -174,25 +182,25 @@ const LoanRequests = () => {
                       <td>
                         <button
                           type="button"
+                          disabled={actionLoading}
                           onClick={() =>
-                            handleApprove(request.id)
-                          }
-                          disabled={
-                            processingId === request.id
+                            handleApprove(
+                              request.id
+                            )
                           }
                         >
-                          {processingId === request.id
+                          {actionLoading
                             ? "Processing..."
                             : "Approve"}
                         </button>
 
                         <button
                           type="button"
+                          disabled={actionLoading}
                           onClick={() =>
-                            handleReject(request.id)
-                          }
-                          disabled={
-                            processingId === request.id
+                            handleReject(
+                              request.id
+                            )
                           }
                         >
                           Reject

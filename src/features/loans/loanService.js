@@ -12,13 +12,15 @@ import { db } from "../../api/firebaseConfig";
 
 const loansCollection = collection(db, "loans");
 
+const EMPLOYEE_LOAN_LIMIT = 1000000;
+
 /*
  * CUSTOMER
  *
- * Create a new loan request.
+ * Create a loan request.
  *
- * Creating the request does NOT change
- * the customer's balance.
+ * This only creates the request.
+ * Customer balance is NOT changed here.
  */
 export const createLoanRequest = async ({
   customerId,
@@ -85,22 +87,29 @@ export const createLoanRequest = async ({
 
   return {
     id: loanRef.id,
+
     customerId,
+
     customerName:
       customerName?.trim() || "Customer",
+
     amount: numericAmount,
+
     purpose: purpose.trim(),
+
     duration: numericDuration,
+
     notes: notes?.trim() || "",
+
     status: "pending",
   };
 };
 
 
 /*
- * CUSTOMER / GENERAL
+ * CUSTOMER
  *
- * Get loans belonging to one customer.
+ * Get all loans belonging to one customer.
  */
 export const getCustomerLoans = async (
   customerId
@@ -118,8 +127,9 @@ export const getCustomerLoans = async (
     )
   );
 
-  const snapshot =
-    await getDocs(loansQuery);
+  const snapshot = await getDocs(
+    loansQuery
+  );
 
   const loans = snapshot.docs.map(
     (loanDoc) => ({
@@ -149,11 +159,10 @@ export const getCustomerLoans = async (
 /*
  * EMPLOYEE
  *
- * Get pending loans that are within
- * the Employee approval limit.
+ * Get pending loans that Employee can process.
  *
  * Employee limit:
- * <= 1,000,000
+ * <= PKR 1,000,000
  */
 export const getPendingLoanRequests =
   async () => {
@@ -166,24 +175,82 @@ export const getPendingLoanRequests =
       )
     );
 
-    const snapshot =
-      await getDocs(loansQuery);
+    const snapshot = await getDocs(
+      loansQuery
+    );
 
-    const requests =
-      snapshot.docs
-        .map((loanDoc) => ({
-          id: loanDoc.id,
-          ...loanDoc.data(),
-        }))
-        .filter((loan) => {
-          const amount =
-            Number(loan.amount);
+    const requests = snapshot.docs
+      .map((loanDoc) => ({
+        id: loanDoc.id,
+        ...loanDoc.data(),
+      }))
+      .filter((loan) => {
+        const amount = Number(
+          loan.amount
+        );
 
-          return (
-            Number.isFinite(amount) &&
-            amount <= 1000000
-          );
-        });
+        return (
+          Number.isFinite(amount) &&
+          amount <= EMPLOYEE_LOAN_LIMIT
+        );
+      });
+
+    requests.sort((a, b) => {
+      const aTime =
+        a.createdAt?.toMillis
+          ? a.createdAt.toMillis()
+          : 0;
+
+      const bTime =
+        b.createdAt?.toMillis
+          ? b.createdAt.toMillis()
+          : 0;
+
+      return bTime - aTime;
+    });
+
+    return requests;
+  };
+
+
+/*
+ * MANAGER
+ *
+ * Get pending high-value loans.
+ *
+ * High-value:
+ * > PKR 1,000,000
+ */
+export const getPendingManagerLoanRequests =
+  async () => {
+    const loansQuery = query(
+      loansCollection,
+      where(
+        "status",
+        "==",
+        "pending"
+      )
+    );
+
+    const snapshot = await getDocs(
+      loansQuery
+    );
+
+    const requests = snapshot.docs
+      .map((loanDoc) => ({
+        id: loanDoc.id,
+        ...loanDoc.data(),
+      }))
+      .filter((loan) => {
+        const amount = Number(
+          loan.amount
+        );
+
+        return (
+          Number.isFinite(amount) &&
+          amount > EMPLOYEE_LOAN_LIMIT
+        );
+      });
 
     requests.sort((a, b) => {
       const aTime =
@@ -206,13 +273,10 @@ export const getPendingLoanRequests =
 /*
  * EMPLOYEE
  *
- * Approve a loan <= 1,000,000.
+ * Approve normal loan.
  *
- * Atomically:
- * 1. Read the pending loan.
- * 2. Read customer account.
- * 3. Update customer balance.
- * 4. Mark loan approved.
+ * Maximum:
+ * PKR 1,000,000
  */
 export const approveLoanRequest =
   async ({
@@ -260,8 +324,9 @@ export const approveLoanRequest =
           );
         }
 
-        const amount =
-          Number(loan.amount);
+        const amount = Number(
+          loan.amount
+        );
 
         if (
           !Number.isFinite(amount) ||
@@ -272,24 +337,19 @@ export const approveLoanRequest =
           );
         }
 
-        if (amount > 1000000) {
+        if (
+          amount > EMPLOYEE_LOAN_LIMIT
+        ) {
           throw new Error(
             "Loans above PKR 1,000,000 require Manager approval."
           );
         }
 
-        if (!loan.customerId) {
-          throw new Error(
-            "Loan customer ID is missing."
-          );
-        }
-
-        const customerRef =
-          doc(
-            db,
-            "users",
-            loan.customerId
-          );
+        const customerRef = doc(
+          db,
+          "users",
+          loan.customerId
+        );
 
         const customerSnapshot =
           await transaction.get(
@@ -321,13 +381,12 @@ export const approveLoanRequest =
           );
         }
 
-        const newBalance =
-          currentBalance + amount;
-
         transaction.update(
           customerRef,
           {
-            balance: newBalance,
+            balance:
+              currentBalance + amount,
+
             updatedAt:
               serverTimestamp(),
           }
@@ -344,6 +403,12 @@ export const approveLoanRequest =
             approvedAt:
               serverTimestamp(),
 
+            processedBy:
+              employeeId,
+
+            processedAt:
+              serverTimestamp(),
+
             updatedAt:
               serverTimestamp(),
           }
@@ -353,6 +418,156 @@ export const approveLoanRequest =
 
     return {
       loanId,
+
+      status: "approved",
+    };
+  };
+
+
+/*
+ * MANAGER
+ *
+ * Approve high-value loan.
+ *
+ * Required amount:
+ * > PKR 1,000,000
+ */
+export const approveManagerLoanRequest =
+  async ({
+    loanId,
+    managerId,
+  }) => {
+    if (!loanId) {
+      throw new Error(
+        "Loan ID is required."
+      );
+    }
+
+    if (!managerId) {
+      throw new Error(
+        "Manager ID is required."
+      );
+    }
+
+    const loanRef = doc(
+      db,
+      "loans",
+      loanId
+    );
+
+    await runTransaction(
+      db,
+      async (transaction) => {
+        const loanSnapshot =
+          await transaction.get(
+            loanRef
+          );
+
+        if (!loanSnapshot.exists()) {
+          throw new Error(
+            "Loan request was not found."
+          );
+        }
+
+        const loan =
+          loanSnapshot.data();
+
+        if (loan.status !== "pending") {
+          throw new Error(
+            "This loan has already been processed."
+          );
+        }
+
+        const amount = Number(
+          loan.amount
+        );
+
+        if (
+          !Number.isFinite(amount) ||
+          amount <= EMPLOYEE_LOAN_LIMIT
+        ) {
+          throw new Error(
+            "This loan does not require Manager approval."
+          );
+        }
+
+        const customerRef = doc(
+          db,
+          "users",
+          loan.customerId
+        );
+
+        const customerSnapshot =
+          await transaction.get(
+            customerRef
+          );
+
+        if (!customerSnapshot.exists()) {
+          throw new Error(
+            "Customer account was not found."
+          );
+        }
+
+        const customer =
+          customerSnapshot.data();
+
+        const currentBalance =
+          Number(
+            customer.balance || 0
+          );
+
+        if (
+          !Number.isFinite(
+            currentBalance
+          ) ||
+          currentBalance < 0
+        ) {
+          throw new Error(
+            "Customer balance is invalid."
+          );
+        }
+
+        transaction.update(
+          customerRef,
+          {
+            balance:
+              currentBalance + amount,
+
+            updatedAt:
+              serverTimestamp(),
+          }
+        );
+
+        transaction.update(
+          loanRef,
+          {
+            status: "approved",
+
+            approvedBy:
+              managerId,
+
+            approvedAt:
+              serverTimestamp(),
+
+            processedBy:
+              managerId,
+
+            processedAt:
+              serverTimestamp(),
+
+            approvedByRole:
+              "manager",
+
+            updatedAt:
+              serverTimestamp(),
+          }
+        );
+      }
+    );
+
+    return {
+      loanId,
+
       status: "approved",
     };
   };
@@ -361,9 +576,7 @@ export const approveLoanRequest =
 /*
  * EMPLOYEE
  *
- * Reject a loan request.
- *
- * Customer balance is NOT changed.
+ * Reject normal loan.
  */
 export const rejectLoanRequest =
   async ({
@@ -411,12 +624,13 @@ export const rejectLoanRequest =
           );
         }
 
-        const amount =
-          Number(loan.amount);
+        const amount = Number(
+          loan.amount
+        );
 
         if (
-          Number.isFinite(amount) &&
-          amount > 1000000
+          !Number.isFinite(amount) ||
+          amount > EMPLOYEE_LOAN_LIMIT
         ) {
           throw new Error(
             "High-value loans require Manager processing."
@@ -434,6 +648,12 @@ export const rejectLoanRequest =
             rejectedAt:
               serverTimestamp(),
 
+            processedBy:
+              employeeId,
+
+            processedAt:
+              serverTimestamp(),
+
             updatedAt:
               serverTimestamp(),
           }
@@ -443,6 +663,106 @@ export const rejectLoanRequest =
 
     return {
       loanId,
+
+      status: "rejected",
+    };
+  };
+
+
+/*
+ * MANAGER
+ *
+ * Reject high-value loan.
+ */
+export const rejectManagerLoanRequest =
+  async ({
+    loanId,
+    managerId,
+  }) => {
+    if (!loanId) {
+      throw new Error(
+        "Loan ID is required."
+      );
+    }
+
+    if (!managerId) {
+      throw new Error(
+        "Manager ID is required."
+      );
+    }
+
+    const loanRef = doc(
+      db,
+      "loans",
+      loanId
+    );
+
+    await runTransaction(
+      db,
+      async (transaction) => {
+        const loanSnapshot =
+          await transaction.get(
+            loanRef
+          );
+
+        if (!loanSnapshot.exists()) {
+          throw new Error(
+            "Loan request was not found."
+          );
+        }
+
+        const loan =
+          loanSnapshot.data();
+
+        if (loan.status !== "pending") {
+          throw new Error(
+            "This loan has already been processed."
+          );
+        }
+
+        const amount = Number(
+          loan.amount
+        );
+
+        if (
+          !Number.isFinite(amount) ||
+          amount <= EMPLOYEE_LOAN_LIMIT
+        ) {
+          throw new Error(
+            "This loan does not require Manager approval."
+          );
+        }
+
+        transaction.update(
+          loanRef,
+          {
+            status: "rejected",
+
+            rejectedBy:
+              managerId,
+
+            rejectedAt:
+              serverTimestamp(),
+
+            processedBy:
+              managerId,
+
+            processedAt:
+              serverTimestamp(),
+
+            rejectedByRole:
+              "manager",
+
+            updatedAt:
+              serverTimestamp(),
+          }
+        );
+      }
+    );
+
+    return {
+      loanId,
+
       status: "rejected",
     };
   };

@@ -7,39 +7,50 @@ import {
   createLoanRequest,
   getCustomerLoans,
   getPendingLoanRequests,
+  getPendingManagerLoanRequests,
   approveLoanRequest,
   rejectLoanRequest,
+  approveManagerLoanRequest,
+  rejectManagerLoanRequest,
 } from "./loanService";
 
-
-export const submitLoanRequest =
-  createAsyncThunk(
-    "loans/submitLoanRequest",
-    async (loanData, thunkAPI) => {
-      try {
-        return await createLoanRequest(
-          loanData
-        );
-      } catch (error) {
-        return thunkAPI.rejectWithValue(
-          error.message ||
-            "Unable to submit loan request."
-        );
-      }
+/*
+ * CUSTOMER
+ *
+ * Submit a new loan request.
+ */
+export const submitLoanRequest = createAsyncThunk(
+  "loans/submitLoanRequest",
+  async (loanData, { rejectWithValue }) => {
+    try {
+      return await createLoanRequest(
+        loanData
+      );
+    } catch (error) {
+      return rejectWithValue(
+        error.message ||
+          "Unable to submit loan request."
+      );
     }
-  );
+  }
+);
 
 
+/*
+ * CUSTOMER
+ *
+ * Fetch customer's loans.
+ */
 export const fetchCustomerLoans =
   createAsyncThunk(
     "loans/fetchCustomerLoans",
-    async (customerId, thunkAPI) => {
+    async (customerId, { rejectWithValue }) => {
       try {
         return await getCustomerLoans(
           customerId
         );
       } catch (error) {
-        return thunkAPI.rejectWithValue(
+        return rejectWithValue(
           error.message ||
             "Unable to load customer loans."
         );
@@ -48,14 +59,19 @@ export const fetchCustomerLoans =
   );
 
 
+/*
+ * EMPLOYEE
+ *
+ * Fetch normal pending loans.
+ */
 export const fetchPendingLoanRequests =
   createAsyncThunk(
     "loans/fetchPendingLoanRequests",
-    async (_, thunkAPI) => {
+    async (_, { rejectWithValue }) => {
       try {
         return await getPendingLoanRequests();
       } catch (error) {
-        return thunkAPI.rejectWithValue(
+        return rejectWithValue(
           error.message ||
             "Unable to load pending loan requests."
         );
@@ -64,44 +80,127 @@ export const fetchPendingLoanRequests =
   );
 
 
-export const approveLoan =
+/*
+ * MANAGER
+ *
+ * Fetch high-value pending loans.
+ */
+export const fetchPendingManagerLoanRequests =
   createAsyncThunk(
-    "loans/approveLoan",
-    async (
-      { loanId, employeeId },
-      thunkAPI
-    ) => {
+    "loans/fetchPendingManagerLoanRequests",
+    async (_, { rejectWithValue }) => {
       try {
-        return await approveLoanRequest({
-          loanId,
-          employeeId,
-        });
+        return await getPendingManagerLoanRequests();
       } catch (error) {
-        return thunkAPI.rejectWithValue(
+        return rejectWithValue(
           error.message ||
-            "Unable to approve loan."
+            "Unable to load Manager loan requests."
         );
       }
     }
   );
 
 
-export const rejectLoan =
+/*
+ * EMPLOYEE
+ *
+ * Approve normal loan.
+ */
+export const approveLoan = createAsyncThunk(
+  "loans/approveLoan",
+  async (
+    { loanId, employeeId },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await approveLoanRequest({
+        loanId,
+        employeeId,
+      });
+    } catch (error) {
+      return rejectWithValue(
+        error.message ||
+          "Unable to approve loan."
+      );
+    }
+  }
+);
+
+
+/*
+ * EMPLOYEE
+ *
+ * Reject normal loan.
+ */
+export const rejectLoan = createAsyncThunk(
+  "loans/rejectLoan",
+  async (
+    { loanId, employeeId },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await rejectLoanRequest({
+        loanId,
+        employeeId,
+      });
+    } catch (error) {
+      return rejectWithValue(
+        error.message ||
+          "Unable to reject loan."
+      );
+    }
+  }
+);
+
+
+/*
+ * MANAGER
+ *
+ * Approve high-value loan.
+ */
+export const approveManagerLoan =
   createAsyncThunk(
-    "loans/rejectLoan",
+    "loans/approveManagerLoan",
     async (
-      { loanId, employeeId },
-      thunkAPI
+      { loanId, managerId },
+      { rejectWithValue }
     ) => {
       try {
-        return await rejectLoanRequest({
+        return await approveManagerLoanRequest({
           loanId,
-          employeeId,
+          managerId,
         });
       } catch (error) {
-        return thunkAPI.rejectWithValue(
+        return rejectWithValue(
           error.message ||
-            "Unable to reject loan."
+            "Unable to approve Manager loan."
+        );
+      }
+    }
+  );
+
+
+/*
+ * MANAGER
+ *
+ * Reject high-value loan.
+ */
+export const rejectManagerLoan =
+  createAsyncThunk(
+    "loans/rejectManagerLoan",
+    async (
+      { loanId, managerId },
+      { rejectWithValue }
+    ) => {
+      try {
+        return await rejectManagerLoanRequest({
+          loanId,
+          managerId,
+        });
+      } catch (error) {
+        return rejectWithValue(
+          error.message ||
+            "Unable to reject Manager loan."
         );
       }
     }
@@ -109,18 +208,14 @@ export const rejectLoan =
 
 
 const initialState = {
-  loans: [],
-
   requests: [],
-
-  submitLoading: false,
+  customerLoans: [],
 
   loading: false,
-
+  submitLoading: false,
   actionLoading: false,
 
   error: null,
-
   actionError: null,
 
   successMessage: "",
@@ -141,14 +236,25 @@ const loanSlice = createSlice({
     clearLoanSuccess: (state) => {
       state.successMessage = "";
     },
+
+    clearLoanState: (state) => {
+      state.requests = [];
+      state.customerLoans = [];
+      state.loading = false;
+      state.submitLoading = false;
+      state.actionLoading = false;
+      state.error = null;
+      state.actionError = null;
+      state.successMessage = "";
+    },
   },
 
   extraReducers: (builder) => {
+    /*
+     * CUSTOMER
+     * Submit loan
+     */
     builder
-
-      // ------------------------------
-      // CUSTOMER SUBMIT
-      // ------------------------------
 
       .addCase(
         submitLoanRequest.pending,
@@ -164,12 +270,14 @@ const loanSlice = createSlice({
         (state, action) => {
           state.submitLoading = false;
 
-          state.loans.unshift(
-            action.payload
-          );
-
           state.successMessage =
             "Loan request submitted successfully. Your request is now pending approval.";
+
+          if (action.payload) {
+            state.customerLoans.unshift(
+              action.payload
+            );
+          }
         }
       )
 
@@ -182,12 +290,14 @@ const loanSlice = createSlice({
             action.payload ||
             "Unable to submit loan request.";
         }
-      )
+      );
 
 
-      // ------------------------------
-      // CUSTOMER LOANS
-      // ------------------------------
+    /*
+     * CUSTOMER
+     * Fetch loans
+     */
+    builder
 
       .addCase(
         fetchCustomerLoans.pending,
@@ -201,8 +311,9 @@ const loanSlice = createSlice({
         fetchCustomerLoans.fulfilled,
         (state, action) => {
           state.loading = false;
-          state.loans =
-            action.payload;
+
+          state.customerLoans =
+            action.payload || [];
         }
       )
 
@@ -213,14 +324,16 @@ const loanSlice = createSlice({
 
           state.error =
             action.payload ||
-            "Unable to load loans.";
+            "Unable to load customer loans.";
         }
-      )
+      );
 
 
-      // ------------------------------
-      // EMPLOYEE PENDING REQUESTS
-      // ------------------------------
+    /*
+     * EMPLOYEE
+     * Fetch pending loans
+     */
+    builder
 
       .addCase(
         fetchPendingLoanRequests.pending,
@@ -236,7 +349,7 @@ const loanSlice = createSlice({
           state.loading = false;
 
           state.requests =
-            action.payload;
+            action.payload || [];
         }
       )
 
@@ -249,18 +362,57 @@ const loanSlice = createSlice({
             action.payload ||
             "Unable to load pending loan requests.";
         }
+      );
+
+
+    /*
+     * MANAGER
+     * Fetch high-value loans
+     */
+    builder
+
+      .addCase(
+        fetchPendingManagerLoanRequests.pending,
+        (state) => {
+          state.loading = true;
+          state.error = null;
+        }
       )
 
+      .addCase(
+        fetchPendingManagerLoanRequests.fulfilled,
+        (state, action) => {
+          state.loading = false;
 
-      // ------------------------------
-      // APPROVE
-      // ------------------------------
+          state.requests =
+            action.payload || [];
+        }
+      )
+
+      .addCase(
+        fetchPendingManagerLoanRequests.rejected,
+        (state, action) => {
+          state.loading = false;
+
+          state.error =
+            action.payload ||
+            "Unable to load Manager loan requests.";
+        }
+      );
+
+
+    /*
+     * EMPLOYEE
+     * Approve
+     */
+    builder
 
       .addCase(
         approveLoan.pending,
         (state) => {
           state.actionLoading = true;
           state.actionError = null;
+          state.successMessage = "";
         }
       )
 
@@ -269,11 +421,13 @@ const loanSlice = createSlice({
         (state, action) => {
           state.actionLoading = false;
 
+          const loanId =
+            action.payload?.loanId;
+
           state.requests =
             state.requests.filter(
-              (loan) =>
-                loan.id !==
-                action.payload.loanId
+              (request) =>
+                request.id !== loanId
             );
 
           state.successMessage =
@@ -290,18 +444,21 @@ const loanSlice = createSlice({
             action.payload ||
             "Unable to approve loan.";
         }
-      )
+      );
 
 
-      // ------------------------------
-      // REJECT
-      // ------------------------------
+    /*
+     * EMPLOYEE
+     * Reject
+     */
+    builder
 
       .addCase(
         rejectLoan.pending,
         (state) => {
           state.actionLoading = true;
           state.actionError = null;
+          state.successMessage = "";
         }
       )
 
@@ -310,11 +467,13 @@ const loanSlice = createSlice({
         (state, action) => {
           state.actionLoading = false;
 
+          const loanId =
+            action.payload?.loanId;
+
           state.requests =
             state.requests.filter(
-              (loan) =>
-                loan.id !==
-                action.payload.loanId
+              (request) =>
+                request.id !== loanId
             );
 
           state.successMessage =
@@ -332,6 +491,98 @@ const loanSlice = createSlice({
             "Unable to reject loan.";
         }
       );
+
+
+    /*
+     * MANAGER
+     * Approve
+     */
+    builder
+
+      .addCase(
+        approveManagerLoan.pending,
+        (state) => {
+          state.actionLoading = true;
+          state.actionError = null;
+          state.successMessage = "";
+        }
+      )
+
+      .addCase(
+        approveManagerLoan.fulfilled,
+        (state, action) => {
+          state.actionLoading = false;
+
+          const loanId =
+            action.payload?.loanId;
+
+          state.requests =
+            state.requests.filter(
+              (request) =>
+                request.id !== loanId
+            );
+
+          state.successMessage =
+            "High-value loan approved successfully.";
+        }
+      )
+
+      .addCase(
+        approveManagerLoan.rejected,
+        (state, action) => {
+          state.actionLoading = false;
+
+          state.actionError =
+            action.payload ||
+            "Unable to approve high-value loan.";
+        }
+      );
+
+
+    /*
+     * MANAGER
+     * Reject
+     */
+    builder
+
+      .addCase(
+        rejectManagerLoan.pending,
+        (state) => {
+          state.actionLoading = true;
+          state.actionError = null;
+          state.successMessage = "";
+        }
+      )
+
+      .addCase(
+        rejectManagerLoan.fulfilled,
+        (state, action) => {
+          state.actionLoading = false;
+
+          const loanId =
+            action.payload?.loanId;
+
+          state.requests =
+            state.requests.filter(
+              (request) =>
+                request.id !== loanId
+            );
+
+          state.successMessage =
+            "High-value loan rejected successfully.";
+        }
+      )
+
+      .addCase(
+        rejectManagerLoan.rejected,
+        (state, action) => {
+          state.actionLoading = false;
+
+          state.actionError =
+            action.payload ||
+            "Unable to reject high-value loan.";
+        }
+      );
   },
 });
 
@@ -339,6 +590,7 @@ const loanSlice = createSlice({
 export const {
   clearLoanError,
   clearLoanSuccess,
+  clearLoanState,
 } = loanSlice.actions;
 
 

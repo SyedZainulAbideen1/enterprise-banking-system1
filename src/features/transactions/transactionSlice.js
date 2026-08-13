@@ -5,11 +5,19 @@ import {
 
 import {
   createDepositRequest,
+  createWithdrawalRequest,
   getPendingTransactionRequests,
   approveDepositRequest,
+  approveWithdrawalRequest,
   rejectTransactionRequest,
   getCustomerTransactions,
 } from "./transactionService";
+
+/*
+ * ==================================================
+ * CUSTOMER TRANSACTION HISTORY
+ * ==================================================
+ */
 
 export const fetchCustomerTransactions =
   createAsyncThunk(
@@ -28,6 +36,13 @@ export const fetchCustomerTransactions =
     }
   );
 
+
+/*
+ * ==================================================
+ * CUSTOMER DEPOSIT REQUEST
+ * ==================================================
+ */
+
 export const submitDepositRequest =
   createAsyncThunk(
     "transactions/submitDepositRequest",
@@ -45,6 +60,37 @@ export const submitDepositRequest =
     }
   );
 
+
+/*
+ * ==================================================
+ * CUSTOMER WITHDRAWAL REQUEST
+ * ==================================================
+ */
+
+export const submitWithdrawalRequest =
+  createAsyncThunk(
+    "transactions/submitWithdrawalRequest",
+    async (requestData, { rejectWithValue }) => {
+      try {
+        return await createWithdrawalRequest(
+          requestData
+        );
+      } catch (error) {
+        return rejectWithValue(
+          error.message ||
+            "Unable to submit withdrawal request."
+        );
+      }
+    }
+  );
+
+
+/*
+ * ==================================================
+ * EMPLOYEE REQUEST LIST
+ * ==================================================
+ */
+
 export const fetchPendingTransactionRequests =
   createAsyncThunk(
     "transactions/fetchPendingTransactionRequests",
@@ -59,6 +105,13 @@ export const fetchPendingTransactionRequests =
       }
     }
   );
+
+
+/*
+ * ==================================================
+ * EMPLOYEE APPROVE DEPOSIT
+ * ==================================================
+ */
 
 export const approveDeposit =
   createAsyncThunk(
@@ -81,6 +134,41 @@ export const approveDeposit =
     }
   );
 
+
+/*
+ * ==================================================
+ * EMPLOYEE APPROVE WITHDRAWAL
+ * ==================================================
+ */
+
+export const approveWithdrawal =
+  createAsyncThunk(
+    "transactions/approveWithdrawal",
+    async (
+      { requestId, employeeId },
+      { rejectWithValue }
+    ) => {
+      try {
+        return await approveWithdrawalRequest({
+          requestId,
+          employeeId,
+        });
+      } catch (error) {
+        return rejectWithValue(
+          error.message ||
+            "Unable to approve withdrawal request."
+        );
+      }
+    }
+  );
+
+
+/*
+ * ==================================================
+ * EMPLOYEE REJECT
+ * ==================================================
+ */
+
 export const rejectTransaction =
   createAsyncThunk(
     "transactions/rejectTransaction",
@@ -102,6 +190,13 @@ export const rejectTransaction =
     }
   );
 
+
+/*
+ * ==================================================
+ * INITIAL STATE
+ * ==================================================
+ */
+
 const initialState = {
   items: [],
 
@@ -119,6 +214,13 @@ const initialState = {
 
   submitSuccess: false,
 };
+
+
+/*
+ * ==================================================
+ * SLICE
+ * ==================================================
+ */
 
 const transactionSlice = createSlice({
   name: "transactions",
@@ -144,7 +246,11 @@ const transactionSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // CUSTOMER TRANSACTION HISTORY
+      /*
+       * ==============================================
+       * CUSTOMER TRANSACTION HISTORY
+       * ==============================================
+       */
 
       .addCase(
         fetchCustomerTransactions.pending,
@@ -174,7 +280,12 @@ const transactionSlice = createSlice({
         }
       )
 
-      // CUSTOMER DEPOSIT REQUEST
+
+      /*
+       * ==============================================
+       * CUSTOMER DEPOSIT REQUEST
+       * ==============================================
+       */
 
       .addCase(
         submitDepositRequest.pending,
@@ -204,7 +315,47 @@ const transactionSlice = createSlice({
         }
       )
 
-      // EMPLOYEE REQUEST LIST
+
+      /*
+       * ==============================================
+       * CUSTOMER WITHDRAWAL REQUEST
+       * ==============================================
+       */
+
+      .addCase(
+        submitWithdrawalRequest.pending,
+        (state) => {
+          state.requestLoading = true;
+          state.requestError = "";
+          state.submitSuccess = false;
+        }
+      )
+
+      .addCase(
+        submitWithdrawalRequest.fulfilled,
+        (state) => {
+          state.requestLoading = false;
+          state.submitSuccess = true;
+        }
+      )
+
+      .addCase(
+        submitWithdrawalRequest.rejected,
+        (state, action) => {
+          state.requestLoading = false;
+
+          state.requestError =
+            action.payload ||
+            "Unable to submit withdrawal request.";
+        }
+      )
+
+
+      /*
+       * ==============================================
+       * EMPLOYEE REQUEST LIST
+       * ==============================================
+       */
 
       .addCase(
         fetchPendingTransactionRequests.pending,
@@ -233,7 +384,12 @@ const transactionSlice = createSlice({
         }
       )
 
-      // EMPLOYEE APPROVE
+
+      /*
+       * ==============================================
+       * EMPLOYEE APPROVE DEPOSIT
+       * ==============================================
+       */
 
       .addCase(
         approveDeposit.pending,
@@ -270,7 +426,54 @@ const transactionSlice = createSlice({
         }
       )
 
-      // EMPLOYEE REJECT
+
+      /*
+       * ==============================================
+       * EMPLOYEE APPROVE WITHDRAWAL
+       * ==============================================
+       */
+
+      .addCase(
+        approveWithdrawal.pending,
+        (state, action) => {
+          state.processingId =
+            action.meta.arg.requestId;
+
+          state.requestError = "";
+        }
+      )
+
+      .addCase(
+        approveWithdrawal.fulfilled,
+        (state, action) => {
+          state.processingId = null;
+
+          state.requests =
+            state.requests.filter(
+              (request) =>
+                request.id !==
+                action.payload.requestId
+            );
+        }
+      )
+
+      .addCase(
+        approveWithdrawal.rejected,
+        (state, action) => {
+          state.processingId = null;
+
+          state.requestError =
+            action.payload ||
+            "Unable to approve withdrawal.";
+        }
+      )
+
+
+      /*
+       * ==============================================
+       * EMPLOYEE REJECT
+       * ==============================================
+       */
 
       .addCase(
         rejectTransaction.pending,
@@ -309,10 +512,18 @@ const transactionSlice = createSlice({
   },
 });
 
+
+/*
+ * ==================================================
+ * ACTIONS
+ * ==================================================
+ */
+
 export const {
   clearTransactionError,
   clearTransactions,
   clearSubmitSuccess,
 } = transactionSlice.actions;
+
 
 export default transactionSlice.reducer;

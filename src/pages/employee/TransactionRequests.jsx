@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   approveDeposit,
+  approveWithdrawal,
   clearTransactionError,
   fetchPendingTransactionRequests,
   rejectTransaction,
@@ -17,9 +18,7 @@ const formatDate = (timestamp) => {
   }
 
   if (typeof timestamp.toDate === "function") {
-    return timestamp
-      .toDate()
-      .toLocaleString();
+    return timestamp.toDate().toLocaleString();
   }
 
   return "Not available";
@@ -32,14 +31,11 @@ const formatAmount = (amount) => {
     return "PKR 0.00";
   }
 
-  return new Intl.NumberFormat(
-    "en-PK",
-    {
-      style: "currency",
-      currency: "PKR",
-      minimumFractionDigits: 2,
-    }
-  ).format(numericAmount);
+  return new Intl.NumberFormat("en-PK", {
+    style: "currency",
+    currency: "PKR",
+    minimumFractionDigits: 2,
+  }).format(numericAmount);
 };
 
 const TransactionRequests = () => {
@@ -76,12 +72,27 @@ const TransactionRequests = () => {
       return;
     }
 
-    await dispatch(
-      approveDeposit({
-        requestId: request.id,
-        employeeId: user.uid,
-      })
-    );
+    if (request.type === "deposit") {
+      await dispatch(
+        approveDeposit({
+          requestId: request.id,
+          employeeId: user.uid,
+        })
+      );
+
+      return;
+    }
+
+    if (request.type === "withdrawal") {
+      await dispatch(
+        approveWithdrawal({
+          requestId: request.id,
+          employeeId: user.uid,
+        })
+      );
+
+      return;
+    }
   };
 
   const handleReject = async (request) => {
@@ -158,37 +169,14 @@ const TransactionRequests = () => {
               <table>
                 <thead>
                   <tr>
-                    <th>
-                      Customer
-                    </th>
-
-                    <th>
-                      Type
-                    </th>
-
-                    <th>
-                      Amount
-                    </th>
-
-                    <th>
-                      Source
-                    </th>
-
-                    <th>
-                      Description
-                    </th>
-
-                    <th>
-                      Requested At
-                    </th>
-
-                    <th>
-                      Status
-                    </th>
-
-                    <th>
-                      Actions
-                    </th>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Source / Reason</th>
+                    <th>Description</th>
+                    <th>Requested At</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
 
@@ -220,6 +208,7 @@ const TransactionRequests = () => {
 
                           <td>
                             {request.source ||
+                              request.reason ||
                               "Not provided"}
                           </td>
 
@@ -247,9 +236,7 @@ const TransactionRequests = () => {
                                 )
                               }
                               disabled={
-                                isProcessing ||
-                                request.type !==
-                                  "deposit"
+                                isProcessing
                               }
                             >
                               {isProcessing

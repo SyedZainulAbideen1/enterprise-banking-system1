@@ -1,5 +1,18 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import {
+  ArrowUpRight,
+  Banknote,
+  CircleCheck,
+  CreditCard,
+  History,
+  Landmark,
+  ReceiptText,
+  ShieldCheck,
+  WalletCards,
+} from "lucide-react";
+
+import "./CustomerDashboard.css";
 
 const CustomerDashboard = () => {
   const { user, profile } = useSelector(
@@ -36,133 +49,230 @@ const CustomerDashboard = () => {
     }
   ).format(balance);
 
+  const services = [
+    {
+      title: "Transactions",
+      description:
+        "View your complete banking transaction history.",
+      icon: History,
+      to: "/customer/transactions",
+    },
+    {
+      title: "Loan Details",
+      description:
+        "View your existing loans and their status.",
+      icon: ReceiptText,
+      to: "/customer/loan",
+    },
+    {
+      title: "Request a Loan",
+      description:
+        "Submit a new loan request for approval.",
+      icon: CreditCard,
+      to: "/customer/loan/request",
+    },
+    {
+      title: "Deposit",
+      description:
+        "Submit a request to deposit funds.",
+      icon: Banknote,
+      to: "/customer/deposit",
+    },
+    {
+      title: "Withdraw",
+      description:
+        "Submit a request to withdraw funds.",
+      icon: WalletCards,
+      to: "/customer/withdraw",
+    },
+    {
+      title: "Donation",
+      description:
+        "Submit and manage your donation requests.",
+      icon: Landmark,
+      to: "/customer/donation",
+    },
+  ];
+
   return (
-    <main>
-      <section>
-        <h1>Customer Dashboard</h1>
+    <main className="customer-dashboard">
+      <div className="customer-dashboard__container">
 
-        <p>
-          Welcome, <strong>{customerName}</strong>.
-        </p>
-
-        <p>
-          Manage your banking activities from your
-          customer dashboard.
-        </p>
-      </section>
-
-      <section>
-        <h2>Account Summary</h2>
-
-        <div>
+        {/* Header */}
+        <section className="customer-dashboard__header">
           <div>
-            <h3>Current Balance</h3>
+            <p className="customer-dashboard__eyebrow">
+              CUSTOMER PORTAL
+            </p>
 
-            <p>
-              <strong>{formattedBalance}</strong>
+            <h1>
+              Welcome back, {customerName}
+            </h1>
+
+            <p className="customer-dashboard__subtitle">
+              Manage your accounts, transactions and
+              banking services from one secure place.
             </p>
           </div>
 
-          <div>
-            <h3>Account Status</h3>
+          <div className="customer-dashboard__secure">
+            <ShieldCheck size={18} />
+            <span>Secure Banking</span>
+          </div>
+        </section>
+
+        {/* Balance */}
+        <section className="customer-dashboard__balance-grid">
+
+          <div className="balance-card">
+            <div className="balance-card__top">
+              <div>
+                <span className="balance-card__label">
+                  AVAILABLE BALANCE
+                </span>
+
+                <p className="balance-card__amount">
+                  {formattedBalance}
+                </p>
+              </div>
+
+              <div className="balance-card__icon">
+                <WalletCards size={24} />
+              </div>
+            </div>
+
+            <div className="balance-card__bottom">
+              <span>Primary account</span>
+
+              <span className="balance-card__status">
+                <CircleCheck size={14} />
+                Active
+              </span>
+            </div>
+          </div>
+
+          <div className="status-card">
+            <div className="status-card__icon">
+              <ShieldCheck size={22} />
+            </div>
+
+            <div>
+              <span>ACCOUNT STATUS</span>
+
+              <strong>
+                {accountStatus}
+              </strong>
+
+              <p>
+                Your banking account is currently
+                available.
+              </p>
+            </div>
+          </div>
+
+        </section>
+
+        {/* Quick Actions */}
+        <section className="customer-section">
+          <div className="customer-section__heading">
+            <div>
+              <span>QUICK ACCESS</span>
+              <h2>Banking Services</h2>
+            </div>
 
             <p>
-              <strong>{accountStatus}</strong>
+              Choose a service to continue.
             </p>
           </div>
-        </div>
-      </section>
 
-      <section>
-        <h2>Account Information</h2>
+          <div className="service-grid">
+            {services.map((service) => {
+              const Icon = service.icon;
 
-        <div>
-          <p>
-            <strong>Name:</strong>{" "}
-            {customerName}
-          </p>
+              return (
+                <Link
+                  key={service.title}
+                  to={service.to}
+                  className="service-card"
+                >
+                  <div className="service-card__icon">
+                    <Icon size={21} />
+                  </div>
 
-          <p>
-            <strong>Email:</strong>{" "}
-            {email}
-          </p>
+                  <div className="service-card__content">
+                    <h3>{service.title}</h3>
 
-          <p>
-            <strong>Role:</strong>{" "}
-            {role}
-          </p>
+                    <p>
+                      {service.description}
+                    </p>
+                  </div>
 
-          <p>
-            <strong>Account Status:</strong>{" "}
-            {accountStatus}
-          </p>
+                  <ArrowUpRight
+                    className="service-card__arrow"
+                    size={18}
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        </section>
 
-          {user?.uid && (
+        {/* Account Information */}
+        <section className="customer-section">
+
+          <div className="customer-section__heading">
+            <div>
+              <span>ACCOUNT</span>
+              <h2>Account Information</h2>
+            </div>
+          </div>
+
+          <div className="account-info">
+
+            <div className="account-info__item">
+              <span>FULL NAME</span>
+              <strong>{customerName}</strong>
+            </div>
+
+            <div className="account-info__item">
+              <span>EMAIL ADDRESS</span>
+              <strong>{email}</strong>
+            </div>
+
+            <div className="account-info__item">
+              <span>ACCOUNT ROLE</span>
+              <strong>{role}</strong>
+            </div>
+
+            <div className="account-info__item">
+              <span>ACCOUNT STATUS</span>
+
+              <strong className="account-info__active">
+                <CircleCheck size={15} />
+                {accountStatus}
+              </strong>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Security Banner */}
+        <section className="customer-security">
+          <div className="customer-security__icon">
+            <ShieldCheck size={23} />
+          </div>
+
+          <div>
+            <h2>Your banking security matters</h2>
+
             <p>
-              <strong>User ID:</strong>{" "}
-              {user.uid}
+              Never share your password, verification
+              codes or banking credentials with anyone.
             </p>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      <section>
-        <h2>Banking Services</h2>
-
-        <nav>
-          <ul>
-            <li>
-              <Link to="/customer/transactions">
-                Transaction History
-              </Link>
-            </li>
-
-            <li>
-              <Link to="/customer/loan">
-                Loan Details
-              </Link>
-            </li>
-
-            <li>
-              <Link to="/customer/loan/request">
-                Request a Loan
-              </Link>
-            </li>
-
-            <li>
-              <Link to="/customer/deposit">
-                Deposit Request
-              </Link>
-            </li>
-
-            <li>
-              <Link to="/customer/withdraw">
-                Withdraw Request
-              </Link>
-            </li>
-
-            <li>
-              <Link to="/customer/donation">
-                Donation Request
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </section>
-
-      <section>
-        <h2>Account Status</h2>
-
-        <p>
-          Your account is currently{" "}
-          <strong>{accountStatus}</strong>.
-        </p>
-
-        <p>
-          If you have any banking requests, use the
-          appropriate service above.
-        </p>
-      </section>
+      </div>
     </main>
   );
 };

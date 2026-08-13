@@ -1,0 +1,427 @@
+.pending-page {
+  position: relative;
+
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 20px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 15% 15%,
+      rgba(37, 99, 235, 0.08),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #f5f8fd,
+      #ffffff 55%,
+      #f2f6fc
+    );
+}
+
+.pending-background {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 49.9%,
+      rgba(11, 59, 130, 0.025) 50%,
+      transparent 50.1%
+    );
+
+  background-size: 80px 80px;
+}
+
+.pending-card {
+  position: relative;
+  z-index: 1;
+
+  width: min(100%, 570px);
+
+  padding: 38px;
+
+  background: rgba(255, 255, 255, 0.97);
+
+  border: 1px solid #dce5f0;
+  border-radius: 20px;
+
+  box-shadow:
+    0 25px 70px
+    rgba(15, 40, 75, 0.1);
+
+  text-align: center;
+}
+
+.pending-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  margin-bottom: 30px;
+
+  text-align: left;
+}
+
+.pending-brand__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 43px;
+  height: 43px;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      var(--primary-dark)
+    );
+
+  border-radius: 11px;
+}
+
+.pending-brand strong,
+.pending-brand span {
+  display: block;
+}
+
+.pending-brand strong {
+  color: var(--text-primary);
+
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.pending-brand span {
+  margin-top: 2px;
+
+  color: var(--text-muted);
+
+  font-size: 0.66rem;
+}
+
+.pending-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+.pending-status__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 68px;
+  height: 68px;
+
+  color: #2563eb;
+
+  background: #eff6ff;
+
+  border: 8px solid #f5f9ff;
+
+  border-radius: 50%;
+}
+
+.pending-status > span {
+  color: #2563eb;
+
+  font-size: 0.62rem;
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+}
+
+.pending-card h1 {
+  margin: 0 0 9px;
+
+  color: var(--text-primary);
+
+  font-size: 1.9rem;
+  font-weight: 820;
+
+  letter-spacing: -0.035em;
+}
+
+.pending-intro {
+  max-width: 440px;
+
+  margin: 0 auto 22px;
+
+  color: var(--text-secondary);
+
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.pending-email {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  margin-bottom: 24px;
+  padding: 12px 15px;
+
+  background: #f7f9fc;
+
+  border: 1px solid #e3eaf3;
+  border-radius: 9px;
+}
+
+.pending-email span {
+  color: #8794a6;
+
+  font-size: 0.58rem;
+  font-weight: 800;
+
+  letter-spacing: 0.09em;
+}
+
+.pending-email strong {
+  overflow: hidden;
+
+  color: var(--text-primary);
+
+  font-size: 0.77rem;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+}
+
+.pending-timeline {
+  padding: 19px;
+
+  text-align: left;
+
+  background: #fafbfd;
+
+  border: 1px solid #e4eaf2;
+  border-radius: 12px;
+}
+
+.pending-step {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  color: #99a5b5;
+}
+
+.pending-step__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  color: #a5afbc;
+
+  background: #eef1f5;
+
+  border-radius: 50%;
+}
+
+.pending-step--complete {
+  color: #3d536d;
+}
+
+.pending-step--complete
+  .pending-step__icon {
+  color: #ffffff;
+
+  background: #16a56a;
+}
+
+.pending-step--active {
+  color: #304a67;
+}
+
+.pending-step--active
+  .pending-step__icon {
+  color: #2563eb;
+
+  background: #e9f1ff;
+}
+
+.pending-step strong,
+.pending-step span {
+  display: block;
+}
+
+.pending-step strong {
+  margin-top: 2px;
+
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.pending-step span {
+  margin-top: 3px;
+
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.pending-line {
+  width: 1px;
+  height: 18px;
+
+  margin: 2px 0 2px 16px;
+
+  background: #dbe3ed;
+}
+
+.pending-notice {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  margin: 19px 0;
+
+  padding: 11px 12px;
+
+  color: #53657b;
+
+  background: #f3f7fc;
+
+  border: 1px solid #dce7f4;
+  border-radius: 9px;
+
+  text-align: left;
+}
+
+.pending-notice svg {
+  flex-shrink: 0;
+
+  margin-top: 1px;
+
+  color: #2563eb;
+}
+
+.pending-notice p {
+  margin: 0;
+
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.pending-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  width: 100%;
+  min-height: 46px;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      var(--primary-dark)
+    );
+
+  border-radius: 9px;
+
+  font-size: 0.8rem;
+  font-weight: 750;
+
+  box-shadow:
+    0 8px 20px
+    rgba(11, 59, 130, 0.16);
+
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.pending-login-button:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 12px 25px
+    rgba(11, 59, 130, 0.22);
+}
+
+.pending-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 17px;
+
+  color: #9aa6b6;
+
+  font-size: 0.62rem;
+}
+
+.pending-security svg {
+  color: #16a56a;
+}
+
+.pending-footer {
+  position: relative;
+  z-index: 1;
+
+  margin: 17px 0 0;
+
+  color: #9ba7b7;
+
+  font-size: 0.63rem;
+  text-align: center;
+}
+
+.pending-footer span {
+  margin: 0 6px;
+
+  color: #c1cad5;
+}
+
+@media (max-width: 600px) {
+  .pending-page {
+    padding: 25px 14px;
+  }
+
+  .pending-card {
+    padding: 28px 20px;
+
+    border-radius: 16px;
+  }
+
+  .pending-card h1 {
+    font-size: 1.65rem;
+  }
+
+  .pending-timeline {
+    padding: 15px;
+  }
+}

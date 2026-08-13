@@ -1,0 +1,555 @@
+.employee-dashboard {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+  color: #172033;
+  box-sizing: border-box;
+}
+
+.employee-dashboard *,
+.employee-dashboard *::before,
+.employee-dashboard *::after {
+  box-sizing: border-box;
+}
+
+/* =========================
+   Hero
+========================= */
+
+.employee-dashboard__hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 36px;
+  margin-bottom: 36px;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    #0b1f3a 0%,
+    #123d68 100%
+  );
+  color: #ffffff;
+  box-shadow: 0 14px 35px rgba(11, 31, 58, 0.16);
+}
+
+.employee-dashboard__hero-content {
+  min-width: 0;
+}
+
+.employee-dashboard__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #b9d7f5;
+}
+
+.employee-dashboard__eyebrow-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #55c89a;
+  box-shadow: 0 0 0 4px rgba(85, 200, 154, 0.14);
+}
+
+.employee-dashboard__title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.employee-dashboard__description {
+  max-width: 680px;
+  margin: 14px 0 0;
+  color: #d5e3f1;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.employee-dashboard__hero-badge {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-shrink: 0;
+  min-width: 225px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.employee-dashboard__hero-badge-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #d9edff;
+}
+
+.employee-dashboard__hero-badge-icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.employee-dashboard__hero-badge strong,
+.employee-dashboard__hero-badge span {
+  display: block;
+}
+
+.employee-dashboard__hero-badge strong {
+  margin-bottom: 3px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.employee-dashboard__hero-badge div span {
+  color: #b9cfe4;
+  font-size: 11px;
+}
+
+/* =========================
+   Sections
+========================= */
+
+.employee-dashboard__section {
+  margin-bottom: 36px;
+}
+
+.employee-dashboard__section-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.employee-dashboard__section-label {
+  display: block;
+  margin-bottom: 5px;
+  color: #2563a6;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.employee-dashboard__section-heading h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.employee-dashboard__section-heading p {
+  margin: 6px 0 0;
+  color: #718096;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* =========================
+   Profile
+========================= */
+
+.employee-dashboard__profile-card {
+  overflow: hidden;
+  border: 1px solid #e4e9f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(20, 42, 72, 0.06);
+}
+
+.employee-dashboard__profile-main {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.employee-dashboard__avatar {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  border-radius: 15px;
+  background: #eaf3fc;
+  color: #145a91;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.employee-dashboard__profile-heading {
+  min-width: 0;
+}
+
+.employee-dashboard__profile-heading h3 {
+  margin: 0;
+  color: #172033;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.employee-dashboard__profile-heading p {
+  margin: 5px 0 9px;
+  color: #718096;
+  font-size: 13px;
+  word-break: break-word;
+}
+
+.employee-dashboard__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #ecf9f2;
+  color: #18764d;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.employee-dashboard__status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2e9b69;
+}
+
+.employee-dashboard__profile-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.employee-dashboard__detail {
+  min-width: 0;
+  padding: 19px 24px;
+  border-right: 1px solid #edf0f4;
+}
+
+.employee-dashboard__detail:nth-child(2) {
+  border-right: 0;
+}
+
+.employee-dashboard__detail--full {
+  grid-column: 1 / -1;
+  border-top: 1px solid #edf0f4;
+  border-right: 0;
+}
+
+.employee-dashboard__detail-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #8a95a5;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.employee-dashboard__detail strong {
+  color: #27364d;
+  font-size: 13px;
+  font-weight: 650;
+  text-transform: capitalize;
+}
+
+.employee-dashboard__detail-status {
+  color: #18764d !important;
+}
+
+.employee-dashboard__user-id {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #516074 !important;
+  font-family: monospace;
+  font-size: 12px !important;
+  text-transform: none !important;
+}
+
+/* =========================
+   Service Cards
+========================= */
+
+.employee-dashboard__services {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.employee-dashboard__service-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 21px;
+  border: 1px solid #e4e9f0;
+  border-radius: 16px;
+  background: #ffffff;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(20, 42, 72, 0.045);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.employee-dashboard__service-card:hover {
+  transform: translateY(-3px);
+  border-color: #bfd5e9;
+  box-shadow: 0 12px 28px rgba(20, 42, 72, 0.09);
+}
+
+.employee-dashboard__service-card:focus-visible {
+  outline: 3px solid rgba(37, 99, 166, 0.2);
+  outline-offset: 3px;
+}
+
+.employee-dashboard__service-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: #edf5fc;
+  color: #1b6098;
+}
+
+.employee-dashboard__service-icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.employee-dashboard__service-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.employee-dashboard__service-content strong,
+.employee-dashboard__service-content span {
+  display: block;
+}
+
+.employee-dashboard__service-content strong {
+  margin-bottom: 5px;
+  color: #1b2a40;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.employee-dashboard__service-content span {
+  color: #718096;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.employee-dashboard__service-arrow {
+  flex-shrink: 0;
+  color: #7890a8;
+  font-size: 20px;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.employee-dashboard__service-card:hover
+.employee-dashboard__service-arrow {
+  transform: translateX(3px);
+  color: #1b6098;
+}
+
+/* =========================
+   Responsibilities
+========================= */
+
+.employee-dashboard__responsibilities {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid #e4e9f0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(20, 42, 72, 0.05);
+}
+
+.employee-dashboard__responsibility {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+  padding: 22px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.employee-dashboard__responsibility:nth-child(odd) {
+  border-right: 1px solid #edf0f4;
+}
+
+.employee-dashboard__responsibility:nth-child(3),
+.employee-dashboard__responsibility:nth-child(4) {
+  border-bottom: 0;
+}
+
+.employee-dashboard__responsibility-number {
+  flex-shrink: 0;
+  color: #8aa0b6;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.employee-dashboard__responsibility h3 {
+  margin: 0 0 5px;
+  color: #27364d;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.employee-dashboard__responsibility p {
+  margin: 0;
+  color: #718096;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+/* =========================
+   Tablet
+========================= */
+
+@media (max-width: 900px) {
+  .employee-dashboard {
+    padding: 24px;
+  }
+
+  .employee-dashboard__hero {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 30px;
+  }
+
+  .employee-dashboard__hero-badge {
+    width: 100%;
+  }
+}
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 640px) {
+  .employee-dashboard {
+    padding: 18px 14px;
+  }
+
+  .employee-dashboard__hero {
+    padding: 24px 20px;
+    margin-bottom: 28px;
+    border-radius: 16px;
+  }
+
+  .employee-dashboard__title {
+    font-size: 28px;
+  }
+
+  .employee-dashboard__description {
+    font-size: 13px;
+  }
+
+  .employee-dashboard__section {
+    margin-bottom: 28px;
+  }
+
+  .employee-dashboard__section-heading h2 {
+    font-size: 19px;
+  }
+
+  .employee-dashboard__profile-main {
+    padding: 20px;
+  }
+
+  .employee-dashboard__profile-details {
+    grid-template-columns: 1fr;
+  }
+
+  .employee-dashboard__detail {
+    border-right: 0;
+    border-bottom: 1px solid #edf0f4;
+  }
+
+  .employee-dashboard__detail:nth-child(2) {
+    border-bottom: 1px solid #edf0f4;
+  }
+
+  .employee-dashboard__detail--full {
+    grid-column: auto;
+    border-top: 0;
+    border-bottom: 0;
+  }
+
+  .employee-dashboard__services {
+    grid-template-columns: 1fr;
+  }
+
+  .employee-dashboard__service-card {
+    padding: 18px;
+  }
+
+  .employee-dashboard__responsibilities {
+    grid-template-columns: 1fr;
+  }
+
+  .employee-dashboard__responsibility,
+  .employee-dashboard__responsibility:nth-child(odd) {
+    border-right: 0;
+    border-bottom: 1px solid #edf0f4;
+  }
+
+  .employee-dashboard__responsibility:last-child {
+    border-bottom: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .employee-dashboard__hero-badge {
+    min-width: 0;
+  }
+
+  .employee-dashboard__profile-main {
+    align-items: flex-start;
+  }
+
+  .employee-dashboard__avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .employee-dashboard__service-card {
+    align-items: flex-start;
+  }
+
+  .employee-dashboard__service-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .employee-dashboard__service-arrow {
+    display: none;
+  }
+}

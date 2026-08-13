@@ -1,0 +1,363 @@
+.transaction-page {
+  min-height: 100vh;
+  padding: 40px;
+  background: #f5f7fb;
+  color: #172033;
+  box-sizing: border-box;
+}
+
+.transaction-page * {
+  box-sizing: border-box;
+}
+
+.transaction-hero {
+  max-width: 1200px;
+  margin: 0 auto 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.transaction-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #315efb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.transaction-hero h1 {
+  margin: 0 0 8px;
+  color: #101828;
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.transaction-hero p {
+  max-width: 650px;
+  margin: 0;
+  color: #667085;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.transaction-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 11px 18px;
+  border: 1px solid #d9dee8;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #344054;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.transaction-back-button:hover {
+  border-color: #315efb;
+  color: #315efb;
+  background: #f8faff;
+  transform: translateY(-1px);
+}
+
+.transaction-panel {
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid #e4e7ec;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 30px rgba(16, 24, 40, 0.06);
+}
+
+.transaction-panel-header {
+  min-height: 86px;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.transaction-panel-header h2 {
+  margin: 0 0 5px;
+  color: #101828;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.transaction-panel-header p {
+  margin: 0;
+  color: #667085;
+  font-size: 13px;
+}
+
+.transaction-count {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #eef4ff;
+  color: #315efb;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.transaction-table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.transaction-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.transaction-table th {
+  padding: 15px 28px;
+  border-bottom: 1px solid #eaecf0;
+  background: #f8fafc;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.transaction-table td {
+  padding: 18px 28px;
+  border-bottom: 1px solid #f0f2f5;
+  color: #344054;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.transaction-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.transaction-table tbody tr:hover {
+  background: #f9fbff;
+}
+
+.transaction-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.transaction-date {
+  color: #475467;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.transaction-type {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 11px;
+  border-radius: 7px;
+  background: #f2f4f7;
+  color: #344054;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.transaction-amount {
+  color: #101828;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.transaction-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 82px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.status-success {
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.status-pending {
+  background: #fffaeb;
+  color: #b54708;
+}
+
+.status-danger {
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.status-neutral {
+  background: #f2f4f7;
+  color: #475467;
+}
+
+.transaction-state {
+  min-height: 330px;
+  padding: 50px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.transaction-state h3 {
+  margin: 16px 0 8px;
+  color: #101828;
+  font-size: 18px;
+}
+
+.transaction-state p {
+  max-width: 480px;
+  margin: 0;
+  color: #667085;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.transaction-state-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #eef4ff;
+  color: #315efb;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.error-icon {
+  background: #fef3f2;
+  color: #d92d20;
+}
+
+.transaction-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #e4e7ec;
+  border-top-color: #315efb;
+  border-radius: 50%;
+  animation: transaction-spin 0.8s linear infinite;
+}
+
+@keyframes transaction-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.transaction-retry-button,
+.transaction-primary-button {
+  margin-top: 22px;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 9px;
+  background: #315efb;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.transaction-retry-button:hover,
+.transaction-primary-button:hover {
+  background: #2448d8;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(49, 94, 251, 0.2);
+}
+
+.transaction-back-button:focus-visible,
+.transaction-retry-button:focus-visible,
+.transaction-primary-button:focus-visible {
+  outline: 3px solid rgba(49, 94, 251, 0.2);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .transaction-page {
+    padding: 24px 16px;
+  }
+
+  .transaction-hero {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+
+  .transaction-hero h1 {
+    font-size: 28px;
+  }
+
+  .transaction-back-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .transaction-panel-header {
+    padding: 18px 20px;
+  }
+
+  .transaction-table {
+    min-width: 680px;
+  }
+
+  .transaction-table th,
+  .transaction-table td {
+    padding: 14px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .transaction-page {
+    padding: 18px 12px;
+  }
+
+  .transaction-hero h1 {
+    font-size: 24px;
+  }
+
+  .transaction-hero p {
+    font-size: 14px;
+  }
+
+  .transaction-panel {
+    border-radius: 12px;
+  }
+
+  .transaction-panel-header {
+    padding: 16px;
+  }
+
+  .transaction-state {
+    min-height: 280px;
+    padding: 40px 18px;
+  }
+}
+

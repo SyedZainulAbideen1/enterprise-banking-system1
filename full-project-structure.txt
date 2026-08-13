@@ -74,6 +74,8 @@ D:.
 |   |           firebase_firestore.js.map
 |   |           index.esm-DLYj8Ffl.js
 |   |           index.esm-DLYj8Ffl.js.map
+|   |           lucide-react.js
+|   |           lucide-react.js.map
 |   |           package.json
 |   |           react-dom.js
 |   |           react-dom.js.map
@@ -89,7 +91,7 @@ D:.
 |   |           react_jsx-dev-runtime.js.map
 |   |           react_jsx-runtime.js
 |   |           react_jsx-runtime.js.map
-|   |           rolldown-runtime-BPOCksWG.js
+|   |           rolldown-runtime-DC62tzP2.js
 |   |           _metadata.json
 |   |           
 |   +---.vite-temp
@@ -28005,9 +28007,12 @@ D:.
     +---components
     |   +---common
     |   |       Button.jsx
+    |   |       Footer.css
+    |   |       Footer.jsx
     |   |       Input.jsx
     |   |       Loading.jsx
     |   |       Modal.jsx
+    |   |       Navbar.css
     |   |       Navbar.jsx
     |   |       ProtectedRoute.jsx
     |   |       Sidebar.jsx
@@ -28053,12 +28058,17 @@ D:.
     |       
     +---pages
     |   +---auth
+    |   |       AccountRejected.css
     |   |       AccountRejected.jsx
+    |   |       Login.css
     |   |       Login.jsx
+    |   |       PendingApproval.css
     |   |       PendingApproval.jsx
+    |   |       Register.css
     |   |       Register.jsx
     |   |       
     |   +---customer
+    |   |   |   CustomerDashboard.css
     |   |   |   CustomerDashboard.jsx
     |   |   |   DepositRequest.jsx
     |   |   |   DonationRequest.jsx
@@ -28078,13 +28088,17 @@ D:.
     |   |       LoanRequests.jsx
     |   |       TransactionRequests.jsx
     |   |       
-    |   \---manager
-    |           CustomerManagement.jsx
-    |           EmployeeManagement.jsx
-    |           LoanRequests.jsx
-    |           ManagerDashboard.jsx
-    |           RegistrationRequests.jsx
-    |           TransactionOversight.jsx
+    |   +---manager
+    |   |       CustomerManagement.jsx
+    |   |       EmployeeManagement.jsx
+    |   |       LoanRequests.jsx
+    |   |       ManagerDashboard.jsx
+    |   |       RegistrationRequests.jsx
+    |   |       TransactionOversight.jsx
+    |   |       
+    |   \---public
+    |           Home.css
+    |           Home.jsx
     |           
     +---routes
     |       AppRoutes.jsx

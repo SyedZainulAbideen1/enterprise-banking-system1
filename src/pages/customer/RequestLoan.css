@@ -1,0 +1,401 @@
+.loan-request-page {
+  min-height: 100vh;
+  padding: 40px 24px 60px;
+  background: var(--bg-primary, #f5f7fb);
+}
+
+.loan-request-container {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.loan-request-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 32px;
+}
+
+.loan-request-label {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.loan-request-header h1 {
+  margin: 0 0 10px;
+  color: #172033;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.15;
+}
+
+.loan-request-header p {
+  max-width: 650px;
+  margin: 0;
+  color: #667085;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.loan-back-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 11px 17px;
+  border: 1px solid #d9dee8;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.loan-back-link:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.loan-request-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.loan-info-card,
+.loan-form-card {
+  border: 1px solid #e4e7ec;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 30px rgba(16, 24, 40, 0.06);
+}
+
+.loan-info-card {
+  padding: 28px;
+}
+
+.loan-info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+  border-radius: 13px;
+  background: #eaf2ff;
+  color: #2563eb;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.loan-info-card h2 {
+  margin: 0 0 10px;
+  color: #172033;
+  font-size: 21px;
+}
+
+.loan-info-card > p {
+  margin: 0;
+  color: #667085;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.loan-info-list {
+  margin-top: 28px;
+  border-top: 1px solid #eaecf0;
+}
+
+.loan-info-list div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 16px 0;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.loan-info-list span {
+  color: #98a2b3;
+  font-size: 12px;
+}
+
+.loan-info-list strong {
+  color: #344054;
+  font-size: 14px;
+}
+
+.loan-note {
+  margin-top: 22px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.loan-note strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #344054;
+  font-size: 13px;
+}
+
+.loan-note p {
+  margin: 0;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.loan-form-card {
+  padding: 32px;
+}
+
+.loan-form-heading {
+  margin-bottom: 28px;
+}
+
+.loan-form-heading > span {
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.loan-form-heading h2 {
+  margin: 7px 0 6px;
+  color: #172033;
+  font-size: 24px;
+}
+
+.loan-form-heading p {
+  margin: 0;
+  color: #667085;
+  font-size: 14px;
+}
+
+.loan-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.loan-field {
+  margin-bottom: 20px;
+}
+
+.loan-field label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.loan-field label span {
+  color: #98a2b3;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.loan-field input,
+.loan-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  outline: none;
+  background: #ffffff;
+  color: #101828;
+  font-family: inherit;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.loan-field input {
+  height: 46px;
+  padding: 0 14px;
+}
+
+.loan-field textarea {
+  padding: 13px 14px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.loan-field input::placeholder,
+.loan-field textarea::placeholder {
+  color: #98a2b3;
+}
+
+.loan-field input:focus,
+.loan-field textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.loan-field input:disabled,
+.loan-field textarea:disabled {
+  cursor: not-allowed;
+  background: #f2f4f7;
+}
+
+.loan-input-wrapper {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  height: 46px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #ffffff;
+  transition: 0.2s ease;
+}
+
+.loan-input-wrapper:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.loan-input-wrapper span {
+  padding: 0 13px;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.loan-input-wrapper input {
+  flex: 1;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.loan-input-wrapper input:focus {
+  box-shadow: none;
+}
+
+.loan-message {
+  margin: 5px 0 20px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.loan-error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b42318;
+}
+
+.loan-success {
+  border: 1px solid #a7f3d0;
+  background: #ecfdf3;
+  color: #047857;
+}
+
+.loan-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 24px;
+  border-top: 1px solid #eaecf0;
+}
+
+.loan-cancel-button,
+.loan-submit-button {
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.loan-cancel-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  color: #344054;
+}
+
+.loan-cancel-button:hover {
+  background: #f9fafb;
+}
+
+.loan-submit-button {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.loan-submit-button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.loan-submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 900px) {
+  .loan-request-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .loan-info-card {
+    order: 2;
+  }
+
+  .loan-form-card {
+    order: 1;
+  }
+}
+
+@media (max-width: 650px) {
+  .loan-request-page {
+    padding: 25px 15px 40px;
+  }
+
+  .loan-request-header {
+    flex-direction: column;
+  }
+
+  .loan-back-link {
+    align-self: flex-start;
+  }
+
+  .loan-form-card,
+  .loan-info-card {
+    padding: 22px;
+    border-radius: 14px;
+  }
+
+  .loan-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .loan-form-footer {
+    flex-direction: column-reverse;
+  }
+
+  .loan-cancel-button,
+  .loan-submit-button {
+    width: 100%;
+  }
+}

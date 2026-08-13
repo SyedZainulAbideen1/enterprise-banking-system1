@@ -1,13 +1,13 @@
 import { useEffect } from "react";
-
 import { Link } from "react-router-dom";
-
 import { useDispatch, useSelector } from "react-redux";
 
 import {
   clearTransactionError,
   fetchCustomerTransactions,
 } from "../../features/transactions/transactionSlice";
+
+import "./TransactionHistory.css";
 
 const formatDate = (timestamp) => {
   if (!timestamp) {
@@ -39,6 +39,35 @@ const formatAmount = (amount) => {
   }).format(numericAmount);
 };
 
+const getStatusClass = (status) => {
+  const normalizedStatus = String(
+    status || "unknown"
+  ).toLowerCase();
+
+  if (
+    normalizedStatus === "approved" ||
+    normalizedStatus === "completed" ||
+    normalizedStatus === "success" ||
+    normalizedStatus === "active"
+  ) {
+    return "status-success";
+  }
+
+  if (normalizedStatus === "pending") {
+    return "status-pending";
+  }
+
+  if (
+    normalizedStatus === "rejected" ||
+    normalizedStatus === "failed" ||
+    normalizedStatus === "cancelled"
+  ) {
+    return "status-danger";
+  }
+
+  return "status-neutral";
+};
+
 const TransactionHistory = () => {
   const dispatch = useDispatch();
 
@@ -47,7 +76,7 @@ const TransactionHistory = () => {
   );
 
   const {
-    items: transactions,
+    items: transactions = [],
     loading,
     error,
   } = useSelector(
@@ -69,53 +98,121 @@ const TransactionHistory = () => {
   }, [dispatch, user?.uid]);
 
   return (
-    <main>
-      <section>
-        <h1>Transaction History</h1>
+    <main className="transaction-page">
+      <section className="transaction-hero">
+        <div>
+          <span className="transaction-label">
+            CUSTOMER BANKING
+          </span>
 
-        <p>
-          View your banking transaction history
-          here.
-        </p>
+          <h1>Transaction History</h1>
 
-        <Link to="/customer">
+          <p>
+            Keep track of your deposits, withdrawals,
+            transfers, and other banking activities.
+          </p>
+        </div>
+
+        <Link
+          to="/customer"
+          className="transaction-back-button"
+        >
+          <span>←</span>
           Back to Dashboard
         </Link>
       </section>
 
-      <section>
+      <section className="transaction-panel">
+        <div className="transaction-panel-header">
+          <div>
+            <h2>All Transactions</h2>
+
+            <p>
+              {transactions.length} transaction
+              {transactions.length === 1 ? "" : "s"} available
+            </p>
+          </div>
+
+          <div className="transaction-count">
+            {transactions.length}
+          </div>
+        </div>
+
         {loading && (
-          <p>Loading transactions...</p>
+          <div className="transaction-state">
+            <div className="transaction-spinner" />
+
+            <h3>Loading transactions</h3>
+
+            <p>
+              Please wait while we retrieve your
+              transaction history.
+            </p>
+          </div>
         )}
 
-        {error && (
-          <p role="alert">
-            {error}
-          </p>
+        {!loading && error && (
+          <div className="transaction-state">
+            <div className="transaction-state-icon error-icon">
+              !
+            </div>
+
+            <h3>Unable to load transactions</h3>
+
+            <p>{error}</p>
+
+            <button
+              type="button"
+              className="transaction-retry-button"
+              onClick={() => {
+                if (user?.uid) {
+                  dispatch(
+                    fetchCustomerTransactions(
+                      user.uid
+                    )
+                  );
+                }
+              }}
+            >
+              Try Again
+            </button>
+          </div>
         )}
 
         {!loading &&
           !error &&
           transactions.length === 0 && (
-            <div>
-              <h2>No Transactions</h2>
+            <div className="transaction-state">
+              <div className="transaction-state-icon">
+                $
+              </div>
+
+              <h3>No transactions yet</h3>
 
               <p>
-                You do not have any transactions
-                yet.
+                Your transaction history will appear
+                here once you complete a banking
+                transaction.
               </p>
+
+              <Link
+                to="/customer"
+                className="transaction-primary-button"
+              >
+                Return to Dashboard
+              </Link>
             </div>
           )}
 
         {!loading &&
           !error &&
           transactions.length > 0 && (
-            <div>
-              <table>
+            <div className="transaction-table-container">
+              <table className="transaction-table">
                 <thead>
                   <tr>
                     <th>Date</th>
-                    <th>Type</th>
+                    <th>Transaction Type</th>
                     <th>Amount</th>
                     <th>Status</th>
                   </tr>
@@ -128,25 +225,37 @@ const TransactionHistory = () => {
                         key={transaction.id}
                       >
                         <td>
-                          {formatDate(
-                            transaction.createdAt
-                          )}
+                          <div className="transaction-date">
+                            {formatDate(
+                              transaction.createdAt
+                            )}
+                          </div>
                         </td>
 
                         <td>
-                          {transaction.type ||
-                            "Not available"}
+                          <span className="transaction-type">
+                            {transaction.type ||
+                              "Not available"}
+                          </span>
                         </td>
 
                         <td>
-                          {formatAmount(
-                            transaction.amount
-                          )}
+                          <strong className="transaction-amount">
+                            {formatAmount(
+                              transaction.amount
+                            )}
+                          </strong>
                         </td>
 
                         <td>
-                          {transaction.status ||
-                            "Not available"}
+                          <span
+                            className={`transaction-status ${getStatusClass(
+                              transaction.status
+                            )}`}
+                          >
+                            {transaction.status ||
+                              "Not available"}
+                          </span>
                         </td>
                       </tr>
                     )

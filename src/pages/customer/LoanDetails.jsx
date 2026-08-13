@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+import "./LoanDetails.css";
+
 const LoanDetails = () => {
   const { user } = useSelector(
     (state) => state.auth
@@ -13,10 +15,8 @@ const LoanDetails = () => {
 
   useEffect(() => {
     /*
-     * Actual loan information will be loaded from
-     * loanService.js and Firestore later.
-     *
-     * We do not create fake loan information here.
+     * Actual loan information will be connected
+     * to loanService.js and Firestore later.
      */
     if (!user?.uid) {
       setLoan(null);
@@ -27,83 +27,148 @@ const LoanDetails = () => {
   }, [user?.uid]);
 
   return (
-    <main>
-      <section>
-        <h1>Loan Details</h1>
+    <main className="loan-details-page">
+      <section className="loan-details-header">
+        <div>
+          <span className="loan-details-eyebrow">
+            CUSTOMER SERVICES
+          </span>
 
-        <p>
-          View your loan information and current loan
-          status.
-        </p>
+          <h1>Loan Details</h1>
 
-        <Link to="/customer">
-          Back to Dashboard
+          <p>
+            View your loan information, application
+            status, and approval details.
+          </p>
+        </div>
+
+        <Link
+          to="/customer"
+          className="loan-details-back"
+        >
+          ← Back to Dashboard
         </Link>
       </section>
 
-      <section>
+      <section className="loan-details-card">
         {loading && (
-          <p>Loading loan information...</p>
+          <div className="loan-details-state">
+            <div className="loan-spinner" />
+            <h2>Loading Loan Information</h2>
+            <p>
+              Please wait while your loan details
+              are being loaded.
+            </p>
+          </div>
         )}
 
         {error && (
-          <p role="alert">
+          <div
+            className="loan-details-message loan-details-error"
+            role="alert"
+          >
             {error}
-          </p>
+          </div>
         )}
 
-        {!loading &&
-          !error &&
-          !loan && (
-            <div>
-              <h2>No Loan Information</h2>
-
-              <p>
-                You currently do not have an active loan
-                record.
-              </p>
-
-              <Link to="/customer/loan/request">
-                Request a Loan
-              </Link>
+        {!loading && !error && !loan && (
+          <div className="loan-details-state">
+            <div className="loan-empty-icon">
+              $
             </div>
-          )}
 
-        {!loading &&
-          !error &&
-          loan && (
-            <div>
-              <h2>Loan Information</h2>
+            <h2>No Loan Information</h2>
 
-              <p>
-                <strong>Loan ID:</strong>{" "}
-                {loan.id}
-              </p>
+            <p>
+              You currently do not have an active
+              loan record.
+            </p>
 
-              <p>
-                <strong>Amount:</strong>{" "}
-                {loan.amount}
-              </p>
+            <Link
+              to="/customer/loan/request"
+              className="loan-details-primary"
+            >
+              Request a Loan
+            </Link>
+          </div>
+        )}
 
-              <p>
-                <strong>Status:</strong>{" "}
+        {!loading && !error && loan && (
+          <div className="loan-record">
+            <div className="loan-record-heading">
+              <div>
+                <span>LOAN ACCOUNT</span>
+                <h2>Loan Information</h2>
+              </div>
+
+              <span className="loan-status">
                 {loan.status}
-              </p>
+              </span>
+            </div>
 
-              <p>
-                <strong>Requested Date:</strong>{" "}
-                {loan.requestedDate}
-              </p>
+            <div className="loan-summary">
+              <div className="loan-summary-item">
+                <span>Loan ID</span>
+                <strong>{loan.id}</strong>
+              </div>
+
+              <div className="loan-summary-item">
+                <span>Amount</span>
+                <strong>{loan.amount}</strong>
+              </div>
+
+              <div className="loan-summary-item">
+                <span>Status</span>
+                <strong>{loan.status}</strong>
+              </div>
+            </div>
+
+            <div className="loan-record-details">
+              <div>
+                <span>Requested Date</span>
+                <strong>
+                  {loan.requestedDate}
+                </strong>
+              </div>
 
               {loan.approvedDate && (
-                <p>
-                  <strong>Approved Date:</strong>{" "}
-                  {loan.approvedDate}
-                </p>
+                <div>
+                  <span>Approved Date</span>
+                  <strong>
+                    {loan.approvedDate}
+                  </strong>
+                </div>
               )}
             </div>
-          )}
+          </div>
+        )}
       </section>
+
+      {!loading && !error && !loan && (
+        <section className="loan-help-card">
+          <div>
+            <span className="loan-help-icon">
+              ✓
+            </span>
+          </div>
+
+          <div>
+            <h2>Need financial assistance?</h2>
+
+            <p>
+              You can submit a new loan request
+              through the secure banking system.
+            </p>
+          </div>
+
+          <Link
+            to="/customer/loan/request"
+            className="loan-help-link"
+          >
+            Apply for Loan →
+          </Link>
+        </section>
+      )}
     </main>
   );
 };

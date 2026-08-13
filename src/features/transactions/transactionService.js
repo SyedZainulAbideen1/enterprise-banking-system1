@@ -5,7 +5,6 @@ import {
   query,
   runTransaction,
   serverTimestamp,
-  updateDoc,
   where,
 } from "firebase/firestore";
 
@@ -22,13 +21,12 @@ const transactionRequestsCollection = collection(
 );
 
 /*
+ * ==================================================
  * CUSTOMER
- *
- * Create a deposit request.
- *
- * This does NOT change the customer's balance.
- * Balance is changed only after employee approval.
+ * DEPOSIT REQUEST
+ * ==================================================
  */
+
 export const createDepositRequest = async ({
   customerId,
   customerName,
@@ -42,7 +40,10 @@ export const createDepositRequest = async ({
 
   const numericAmount = Number(amount);
 
-  if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+  if (
+    !Number.isFinite(numericAmount) ||
+    numericAmount <= 0
+  ) {
     throw new Error(
       "Deposit amount must be greater than zero."
     );
@@ -61,6 +62,7 @@ export const createDepositRequest = async ({
   await runTransaction(db, async (transaction) => {
     transaction.set(requestRef, {
       customerId,
+
       customerName:
         customerName?.trim() || "Customer",
 
@@ -76,6 +78,7 @@ export const createDepositRequest = async ({
       status: "pending",
 
       createdAt: serverTimestamp(),
+
       updatedAt: serverTimestamp(),
     });
   });
@@ -89,11 +92,91 @@ export const createDepositRequest = async ({
   };
 };
 
+
 /*
- * EMPLOYEE
+ * ==================================================
+ * CUSTOMER
+ * WITHDRAWAL REQUEST
+ * ==================================================
  *
- * Fetch pending transaction requests.
+ * This does NOT change the customer's balance.
+ *
+ * Balance changes only after employee approval.
  */
+
+export const createWithdrawalRequest = async ({
+  customerId,
+  customerName,
+  amount,
+  reason,
+  description,
+}) => {
+  if (!customerId) {
+    throw new Error("Customer ID is required.");
+  }
+
+  const numericAmount = Number(amount);
+
+  if (
+    !Number.isFinite(numericAmount) ||
+    numericAmount <= 0
+  ) {
+    throw new Error(
+      "Withdrawal amount must be greater than zero."
+    );
+  }
+
+  if (!reason?.trim()) {
+    throw new Error(
+      "Withdrawal reason is required."
+    );
+  }
+
+  const requestRef = doc(
+    transactionRequestsCollection
+  );
+
+  await runTransaction(db, async (transaction) => {
+    transaction.set(requestRef, {
+      customerId,
+
+      customerName:
+        customerName?.trim() || "Customer",
+
+      type: "withdrawal",
+
+      amount: numericAmount,
+
+      reason: reason.trim(),
+
+      description:
+        description?.trim() || "",
+
+      status: "pending",
+
+      createdAt: serverTimestamp(),
+
+      updatedAt: serverTimestamp(),
+    });
+  });
+
+  return {
+    id: requestRef.id,
+    customerId,
+    type: "withdrawal",
+    amount: numericAmount,
+    status: "pending",
+  };
+};
+
+
+/*
+ * ==================================================
+ * EMPLOYEE
+ * FETCH PENDING REQUESTS
+ * ==================================================
+ */
+
 export const getPendingTransactionRequests =
   async () => {
     const requestsQuery = query(
@@ -127,19 +210,14 @@ export const getPendingTransactionRequests =
     return requests;
   };
 
+
 /*
+ * ==================================================
  * EMPLOYEE
- *
- * Approve a deposit request.
- *
- * This operation atomically:
- *
- * 1. Reads the customer.
- * 2. Reads the pending request.
- * 3. Updates customer balance.
- * 4. Creates a completed transaction.
- * 5. Marks request as approved.
+ * APPROVE DEPOSIT REQUEST
+ * ==================================================
  */
+
 export const approveDepositRequest = async ({
   requestId,
   employeeId,
@@ -193,7 +271,10 @@ export const approveDepositRequest = async ({
 
     const amount = Number(request.amount);
 
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ) {
       throw new Error(
         "Invalid deposit amount."
       );
@@ -238,7 +319,8 @@ export const approveDepositRequest = async ({
     });
 
     transaction.set(transactionRef, {
-      customerId: request.customerId,
+      customerId:
+        request.customerId,
 
       customerName:
         request.customerName ||
@@ -249,7 +331,8 @@ export const approveDepositRequest = async ({
 
       amount,
 
-      source: request.source || "",
+      source:
+        request.source || "",
 
       description:
         request.description || "",
@@ -258,7 +341,8 @@ export const approveDepositRequest = async ({
 
       processedBy: employeeId,
 
-      createdAt: serverTimestamp(),
+      createdAt:
+        serverTimestamp(),
 
       requestId,
     });
@@ -268,9 +352,11 @@ export const approveDepositRequest = async ({
 
       processedBy: employeeId,
 
-      processedAt: serverTimestamp(),
+      processedAt:
+        serverTimestamp(),
 
-      updatedAt: serverTimestamp(),
+      updatedAt:
+        serverTimestamp(),
     });
   });
 
@@ -280,13 +366,197 @@ export const approveDepositRequest = async ({
   };
 };
 
+
 /*
+ * ==================================================
  * EMPLOYEE
+ * APPROVE WITHDRAWAL REQUEST
+ * ==================================================
  *
- * Reject a deposit request.
+ * Atomically:
+ *
+ * 1. Reads withdrawal request.
+ * 2. Reads customer account.
+ * 3. Checks available balance.
+ * 4. Subtracts withdrawal amount.
+ * 5. Creates completed transaction.
+ * 6. Marks request as approved.
+ */
+
+export const approveWithdrawalRequest = async ({
+  requestId,
+  employeeId,
+}) => {
+  if (!requestId) {
+    throw new Error(
+      "Transaction request ID is required."
+    );
+  }
+
+  if (!employeeId) {
+    throw new Error(
+      "Employee ID is required."
+    );
+  }
+
+  const requestRef = doc(
+    db,
+    "transactionRequests",
+    requestId
+  );
+
+  const transactionRef = doc(
+    transactionsCollection
+  );
+
+  await runTransaction(db, async (transaction) => {
+    const requestSnapshot =
+      await transaction.get(requestRef);
+
+    if (!requestSnapshot.exists()) {
+      throw new Error(
+        "Transaction request was not found."
+      );
+    }
+
+    const request =
+      requestSnapshot.data();
+
+    if (request.status !== "pending") {
+      throw new Error(
+        "This request has already been processed."
+      );
+    }
+
+    if (request.type !== "withdrawal") {
+      throw new Error(
+        "Only withdrawal requests can be approved here."
+      );
+    }
+
+    const amount = Number(request.amount);
+
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ) {
+      throw new Error(
+        "Invalid withdrawal amount."
+      );
+    }
+
+    const customerRef = doc(
+      db,
+      "users",
+      request.customerId
+    );
+
+    const customerSnapshot =
+      await transaction.get(customerRef);
+
+    if (!customerSnapshot.exists()) {
+      throw new Error(
+        "Customer account was not found."
+      );
+    }
+
+    const customer =
+      customerSnapshot.data();
+
+    const currentBalance =
+      Number(customer.balance || 0);
+
+    if (
+      !Number.isFinite(currentBalance) ||
+      currentBalance < 0
+    ) {
+      throw new Error(
+        "Customer balance is invalid."
+      );
+    }
+
+    /*
+     * IMPORTANT:
+     * Customer cannot withdraw more
+     * than the available balance.
+     */
+
+    if (amount > currentBalance) {
+      throw new Error(
+        "Insufficient balance for this withdrawal."
+      );
+    }
+
+    const newBalance =
+      currentBalance - amount;
+
+    transaction.update(customerRef, {
+      balance: newBalance,
+      updatedAt: serverTimestamp(),
+    });
+
+    transaction.set(transactionRef, {
+      customerId:
+        request.customerId,
+
+      customerName:
+        request.customerName ||
+        customer.fullName ||
+        "Customer",
+
+      type: "withdrawal",
+
+      amount,
+
+      reason:
+        request.reason || "",
+
+      description:
+        request.description || "",
+
+      status: "completed",
+
+      processedBy: employeeId,
+
+      createdAt:
+        serverTimestamp(),
+
+      requestId,
+    });
+
+    transaction.update(requestRef, {
+      status: "approved",
+
+      processedBy: employeeId,
+
+      processedAt:
+        serverTimestamp(),
+
+      updatedAt:
+        serverTimestamp(),
+    });
+  });
+
+  return {
+    requestId,
+    status: "approved",
+  };
+};
+
+
+/*
+ * ==================================================
+ * EMPLOYEE
+ * REJECT TRANSACTION REQUEST
+ * ==================================================
+ *
+ * Works for both:
+ * - deposit
+ * - withdrawal
  *
  * Customer balance is NOT changed.
  */
+
 export const rejectTransactionRequest =
   async ({
     requestId,
@@ -334,7 +604,8 @@ export const rejectTransactionRequest =
         transaction.update(requestRef, {
           status: "rejected",
 
-          processedBy: employeeId,
+          processedBy:
+            employeeId,
 
           processedAt:
             serverTimestamp(),
@@ -351,12 +622,14 @@ export const rejectTransactionRequest =
     };
   };
 
+
 /*
+ * ==================================================
  * CUSTOMER
- *
- * Fetch only the authenticated customer's
- * completed transactions.
+ * FETCH TRANSACTIONS
+ * ==================================================
  */
+
 export const getCustomerTransactions =
   async (customerId) => {
     if (!customerId) {

@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
 
 import {
-  fetchPendingLoanRequests,
-  approveLoan,
-  rejectLoan,
+  fetchPendingManagerLoanRequests,
+  approveManagerLoan,
+  rejectManagerLoan,
   clearLoanError,
 } from "../../features/loans/loanSlice";
 
@@ -15,17 +15,17 @@ const LoanRequests = () => {
 
   const {
     requests = [],
-    loading,
-    actionLoading,
-    error,
-    actionError,
-    successMessage,
+    loading = false,
+    actionLoading = false,
+    error = null,
+    actionError = null,
+    successMessage = "",
   } = useSelector(
     (state) => state.loans || {}
   );
 
   useEffect(() => {
-    dispatch(fetchPendingLoanRequests());
+    dispatch(fetchPendingManagerLoanRequests());
 
     return () => {
       dispatch(clearLoanError());
@@ -34,7 +34,8 @@ const LoanRequests = () => {
 
   const getManagerId = () => {
     const auth = getAuth();
-    return auth.currentUser?.uid;
+
+    return auth.currentUser?.uid || "";
   };
 
   const handleApprove = async (loanId) => {
@@ -45,7 +46,7 @@ const LoanRequests = () => {
     }
 
     const confirmed = window.confirm(
-      "Are you sure you want to approve this loan?"
+      "Are you sure you want to approve this high-value loan?"
     );
 
     if (!confirmed) {
@@ -53,7 +54,7 @@ const LoanRequests = () => {
     }
 
     await dispatch(
-      approveLoan({
+      approveManagerLoan({
         loanId,
         managerId,
       })
@@ -68,7 +69,7 @@ const LoanRequests = () => {
     }
 
     const confirmed = window.confirm(
-      "Are you sure you want to reject this loan?"
+      "Are you sure you want to reject this high-value loan?"
     );
 
     if (!confirmed) {
@@ -76,7 +77,7 @@ const LoanRequests = () => {
     }
 
     await dispatch(
-      rejectLoan({
+      rejectManagerLoan({
         loanId,
         managerId,
       })
@@ -89,8 +90,8 @@ const LoanRequests = () => {
         <h1>High-Value Loan Requests</h1>
 
         <p>
-          Review loan requests that require
-          Manager approval.
+          Review and manage loan requests
+          requiring Manager approval.
         </p>
 
         <Link to="/manager">
@@ -100,7 +101,9 @@ const LoanRequests = () => {
 
       <section>
         {loading && (
-          <p>Loading loan requests...</p>
+          <p>
+            Loading loan requests...
+          </p>
         )}
 
         {error && (
@@ -125,12 +128,14 @@ const LoanRequests = () => {
           !error &&
           requests.length === 0 && (
             <div>
-              <h2>No High-Value Loan Requests</h2>
+              <h2>
+                No High-Value Loan Requests
+              </h2>
 
               <p>
-                There are currently no loan
-                requests available for Manager
-                approval.
+                There are currently no high-value
+                loan requests available for
+                Manager approval.
               </p>
             </div>
           )}
@@ -147,7 +152,7 @@ const LoanRequests = () => {
                     <th>Purpose</th>
                     <th>Duration</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
 
@@ -172,11 +177,13 @@ const LoanRequests = () => {
                       </td>
 
                       <td>
-                        {request.duration || 0} months
+                        {request.duration || 0}{" "}
+                        months
                       </td>
 
                       <td>
-                        {request.status}
+                        {request.status ||
+                          "pending"}
                       </td>
 
                       <td>

@@ -1,0 +1,445 @@
+/* =========================================================
+   ENTERPRISE BANKING SYSTEM
+   GLOBAL DESIGN SYSTEM
+   ========================================================= */
+
+:root {
+  /* Brand */
+  --primary: #0b3b82;
+  --primary-dark: #082d63;
+  --primary-light: #eaf2ff;
+
+  --secondary: #0f766e;
+  --secondary-light: #e8f7f5;
+
+  /* Backgrounds */
+  --background: #f5f7fb;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+
+  /* Text */
+  --text-primary: #172033;
+  --text-secondary: #5f6b7a;
+  --text-muted: #8a94a3;
+  --text-white: #ffffff;
+
+  /* Borders */
+  --border: #e3e8ef;
+  --border-light: #edf1f5;
+
+  /* Status */
+  --success: #16803c;
+  --success-light: #eaf7ee;
+
+  --warning: #b7791f;
+  --warning-light: #fff8e7;
+
+  --danger: #c53030;
+  --danger-light: #fff0f0;
+
+  --info: #2563eb;
+  --info-light: #eff6ff;
+
+  /* Shadows */
+  --shadow-sm:
+    0 1px 3px rgba(15, 23, 42, 0.06);
+
+  --shadow-md:
+    0 8px 25px rgba(15, 23, 42, 0.08);
+
+  --shadow-lg:
+    0 18px 45px rgba(15, 23, 42, 0.12);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* Layout */
+  --container-width: 1200px;
+
+  /* Typography */
+  --font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.35rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-3xl: 2.25rem;
+  --font-size-4xl: 3rem;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+
+  color: var(--text-primary);
+  background: var(--background);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.2;
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   COMMON CONTAINER
+   ========================================================= */
+
+.container {
+  width: min(
+    calc(100% - 40px),
+    var(--container-width)
+  );
+
+  margin-inline: auto;
+}
+
+/* =========================================================
+   COMMON SECTION
+   ========================================================= */
+
+.section {
+  padding: var(--space-20) 0;
+}
+
+.section-header {
+  max-width: 700px;
+  margin-bottom: var(--space-12);
+}
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  margin-bottom: var(--space-3);
+
+  color: var(--primary);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  margin-bottom: var(--space-4);
+
+  color: var(--text-primary);
+  font-size: clamp(
+    2rem,
+    4vw,
+    2.8rem
+  );
+
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.section-description {
+  margin-bottom: 0;
+
+  color: var(--text-secondary);
+  font-size: var(--font-size-lg);
+}
+
+/* =========================================================
+   COMMON CARD
+   ========================================================= */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* =========================================================
+   COMMON BUTTONS
+   ========================================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  min-height: 44px;
+  padding: 10px 20px;
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  color: var(--text-white);
+  background: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  color: var(--primary);
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.btn-success {
+  color: var(--text-white);
+  background: var(--success);
+}
+
+.btn-danger {
+  color: var(--text-white);
+  background: var(--danger);
+}
+
+/* =========================================================
+   STATUS BADGES
+   ========================================================= */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+}
+
+.status-pending {
+  color: var(--warning);
+  background: var(--warning-light);
+}
+
+.status-approved,
+.status-completed,
+.status-success {
+  color: var(--success);
+  background: var(--success-light);
+}
+
+.status-rejected,
+.status-failed {
+  color: var(--danger);
+  background: var(--danger-light);
+}
+
+.status-info {
+  color: var(--info);
+  background: var(--info-light);
+}
+
+/* =========================================================
+   FORM ELEMENTS
+   ========================================================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-label {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+.form-control {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+
+  color: var(--text-primary);
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+
+  outline: none;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(11, 59, 130, 0.1);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  :root {
+    --space-20: 56px;
+    --space-16: 48px;
+  }
+
+  .container {
+    width: min(
+      calc(100% - 28px),
+      var(--container-width)
+    );
+  }
+
+  .section {
+    padding: var(--space-16) 0;
+  }
+
+  .section-description {
+    font-size: var(--font-size-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: min(
+      calc(100% - 24px),
+      var(--container-width)
+    );
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

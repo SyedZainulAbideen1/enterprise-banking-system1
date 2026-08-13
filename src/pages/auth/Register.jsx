@@ -1,8 +1,19 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  Mail,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
 
 import { registerNewUser } from "../../features/registrationRequests/registrationService";
 import { logoutUser } from "../../features/auth/authService";
+
+import "./Register.css";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -13,6 +24,10 @@ const Register = () => {
     password: "",
     confirmPassword: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -58,7 +73,9 @@ const Register = () => {
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError(
+        "Password must be at least 6 characters."
+      );
       return;
     }
 
@@ -76,15 +93,6 @@ const Register = () => {
         fullName: name,
       });
 
-      /*
-       * Firebase Authentication automatically signs the newly
-       * created user in.
-       *
-       * The newly registered user has a "pending" status,
-       * so the user must not remain authenticated.
-       *
-       * We immediately sign the user out.
-       */
       await logoutUser();
 
       navigate("/registration-pending", {
@@ -107,13 +115,15 @@ const Register = () => {
           "An account with this email already exists."
         );
       } else if (
-        registrationError.code === "auth/invalid-email"
+        registrationError.code ===
+        "auth/invalid-email"
       ) {
         setError(
           "Please enter a valid email address."
         );
       } else if (
-        registrationError.code === "auth/weak-password"
+        registrationError.code ===
+        "auth/weak-password"
       ) {
         setError("Password is too weak.");
       } else {
@@ -128,107 +138,262 @@ const Register = () => {
   };
 
   return (
-    <main>
-      <section>
-        <h1>Create Account</h1>
+    <main className="register-page">
+      <div className="register-page__background" />
 
-        <p>
-          Submit your account request. Your account will
-          become active after administrator approval.
-        </p>
+      <div className="register-container">
+        <Link
+          to="/"
+          className="register-back-link"
+        >
+          <ArrowLeft size={16} />
+          Back to home
+        </Link>
 
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="name">
-              Full Name
-            </label>
+        <section className="register-card">
+          <div className="register-card__brand">
+            <div className="register-card__logo">
+              <ShieldCheck size={25} />
+            </div>
 
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              autoComplete="name"
-              disabled={loading}
-            />
+            <div>
+              <strong>
+                Enterprise Banking
+              </strong>
+
+              <span>
+                Secure digital banking
+              </span>
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="email">
-              Email
-            </label>
+          <div className="register-card__heading">
+            <span className="register-eyebrow">
+              ACCOUNT REQUEST
+            </span>
 
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              autoComplete="email"
-              disabled={loading}
-            />
-          </div>
+            <h1>
+              Create your account
+            </h1>
 
-          <div>
-            <label htmlFor="password">
-              Password
-            </label>
-
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Create a password"
-              autoComplete="new-password"
-              disabled={loading}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="confirmPassword">
-              Confirm Password
-            </label>
-
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm your password"
-              autoComplete="new-password"
-              disabled={loading}
-            />
-          </div>
-
-          {error && (
-            <p role="alert">
-              {error}
+            <p>
+              Submit your details to request access
+              to Enterprise Banking.
             </p>
-          )}
+          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
+          <div className="register-notice">
+            <ShieldCheck size={17} />
+
+            <p>
+              Your account will remain pending until
+              it is reviewed and approved by an
+              authorized bank administrator.
+            </p>
+          </div>
+
+          <form
+            className="register-form"
+            onSubmit={handleSubmit}
           >
-            {loading
-              ? "Submitting Request..."
-              : "Create Account"}
-          </button>
-        </form>
+            <div className="register-field">
+              <label htmlFor="name">
+                Full name
+              </label>
 
-        <p>
-          Already have an account?{" "}
-          <Link to="/login">
-            Sign in
-          </Link>
+              <div className="register-input-wrapper">
+                <UserRound size={18} />
+
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                  autoComplete="name"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <div className="register-field">
+              <label htmlFor="email">
+                Email address
+              </label>
+
+              <div className="register-input-wrapper">
+                <Mail size={18} />
+
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <div className="register-fields-row">
+              <div className="register-field">
+                <label htmlFor="password">
+                  Password
+                </label>
+
+                <div className="register-input-wrapper">
+                  <LockKeyhole size={18} />
+
+                  <input
+                    id="password"
+                    name="password"
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Create password"
+                    autoComplete="new-password"
+                    disabled={loading}
+                  />
+
+                  <button
+                    type="button"
+                    className="register-password-toggle"
+                    onClick={() =>
+                      setShowPassword(
+                        (previous) => !previous
+                      )
+                    }
+                    aria-label={
+                      showPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                    disabled={loading}
+                  >
+                    {showPassword ? (
+                      <EyeOff size={17} />
+                    ) : (
+                      <Eye size={17} />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="register-field">
+                <label htmlFor="confirmPassword">
+                  Confirm password
+                </label>
+
+                <div className="register-input-wrapper">
+                  <LockKeyhole size={18} />
+
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={
+                      showConfirmPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={
+                      formData.confirmPassword
+                    }
+                    onChange={handleChange}
+                    placeholder="Confirm password"
+                    autoComplete="new-password"
+                    disabled={loading}
+                  />
+
+                  <button
+                    type="button"
+                    className="register-password-toggle"
+                    onClick={() =>
+                      setShowConfirmPassword(
+                        (previous) => !previous
+                      )
+                    }
+                    aria-label={
+                      showConfirmPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                    disabled={loading}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff size={17} />
+                    ) : (
+                      <Eye size={17} />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {error && (
+              <div
+                className="register-error"
+                role="alert"
+              >
+                <span className="register-error__icon">
+                  !
+                </span>
+
+                <span>{error}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="register-submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="register-spinner" />
+                  Submitting request...
+                </>
+              ) : (
+                <>
+                  Submit account request
+                  <ArrowLeft
+                    size={17}
+                    className="register-submit__arrow"
+                  />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="register-divider">
+            <span />
+            <p>Secure registration</p>
+            <span />
+          </div>
+
+          <div className="register-login">
+            <span>
+              Already have an account?
+            </span>
+
+            <Link to="/login">
+              Sign in
+            </Link>
+          </div>
+        </section>
+
+        <p className="register-footer-text">
+          Enterprise Banking System
+          <span>•</span>
+          Secure digital financial services
         </p>
-      </section>
+      </div>
     </main>
   );
 };

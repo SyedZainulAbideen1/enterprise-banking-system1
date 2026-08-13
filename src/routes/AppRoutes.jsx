@@ -5,6 +5,8 @@ import Register from "../pages/auth/Register";
 import PendingApproval from "../pages/auth/PendingApproval";
 import AccountRejected from "../pages/auth/AccountRejected";
 
+import Home from "../pages/public/Home";
+
 import CustomerRoutes from "./CustomerRoutes";
 import EmployeeRoutes from "./EmployeeRoutes";
 import ManagerRoutes from "./ManagerRoutes";
@@ -12,6 +14,12 @@ import ManagerRoutes from "./ManagerRoutes";
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Public Homepage */}
+      <Route
+        path="/"
+        element={<Home />}
+      />
+
       {/* Public Authentication Routes */}
       <Route
         path="/login"
@@ -49,16 +57,10 @@ const AppRoutes = () => {
         element={<ManagerRoutes />}
       />
 
-      {/* Default Route */}
-      <Route
-        path="/"
-        element={<Navigate to="/login" replace />}
-      />
-
       {/* Unknown Route */}
       <Route
         path="*"
-        element={<Navigate to="/login" replace />}
+        element={<Navigate to="/" replace />}
       />
     </Routes>
   );

@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  Mail,
+  ShieldCheck,
+} from "lucide-react";
 
 import {
   loginUser,
   getUserProfile,
   logoutUser,
 } from "../../features/auth/authService";
+
+import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,6 +25,7 @@ const Login = () => {
     password: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -165,70 +176,187 @@ const Login = () => {
   };
 
   return (
-    <main>
-      <section>
-        <h1>Sign In</h1>
+    <main className="login-page">
+      <div className="login-page__background" />
 
-        <p>
-          Sign in to your Enterprise Banking System account.
-        </p>
+      <div className="login-container">
+        <Link
+          to="/"
+          className="login-back-link"
+        >
+          <ArrowLeft size={16} />
+          Back to home
+        </Link>
 
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="email">
-              Email
-            </label>
+        <section className="login-card">
+          <div className="login-card__brand">
+            <div className="login-card__logo">
+              <ShieldCheck size={25} />
+            </div>
 
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              autoComplete="email"
-              disabled={loading}
-            />
+            <div>
+              <strong>
+                Enterprise Banking
+              </strong>
+
+              <span>
+                Secure digital banking
+              </span>
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="password">
-              Password
-            </label>
+          <div className="login-card__heading">
+            <h1>
+              Welcome back
+            </h1>
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              autoComplete="current-password"
-              disabled={loading}
-            />
-          </div>
-
-          {error && (
-            <p role="alert">
-              {error}
+            <p>
+              Sign in to securely access your
+              banking account.
             </p>
-          )}
+          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
+          <form
+            className="login-form"
+            onSubmit={handleSubmit}
           >
-            {loading ? "Signing In..." : "Sign In"}
-          </button>
-        </form>
+            <div className="login-field">
+              <label htmlFor="email">
+                Email address
+              </label>
 
-        <p>
-          Don't have an account?{" "}
-          <Link to="/register">
-            Create Account
-          </Link>
+              <div className="login-input-wrapper">
+                <Mail size={18} />
+
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <div className="login-field">
+              <div className="login-label-row">
+                <label htmlFor="password">
+                  Password
+                </label>
+              </div>
+
+              <div className="login-input-wrapper">
+                <LockKeyhole size={18} />
+
+                <input
+                  id="password"
+                  name="password"
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  disabled={loading}
+                />
+
+                <button
+                  type="button"
+                  className="login-password-toggle"
+                  onClick={() =>
+                    setShowPassword(
+                      (previous) => !previous
+                    )
+                  }
+                  aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
+                  disabled={loading}
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div
+                className="login-error"
+                role="alert"
+              >
+                <span className="login-error__icon">
+                  !
+                </span>
+
+                <span>{error}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="login-submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="login-spinner" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign in securely
+                  <ArrowLeft
+                    size={17}
+                    className="login-submit__arrow"
+                  />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="login-divider">
+            <span />
+            <p>Secure access</p>
+            <span />
+          </div>
+
+          <div className="login-security">
+            <LockKeyhole size={16} />
+
+            <p>
+              Your banking session is protected
+              with secure authentication.
+            </p>
+          </div>
+
+          <div className="login-register">
+            <span>
+              Don't have an account?
+            </span>
+
+            <Link to="/register">
+              Create an account
+            </Link>
+          </div>
+        </section>
+
+        <p className="login-footer-text">
+          Enterprise Banking System
+          <span>•</span>
+          Secure digital financial services
         </p>
-      </section>
+      </div>
     </main>
   );
 };
